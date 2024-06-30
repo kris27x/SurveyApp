@@ -13,6 +13,9 @@ import com.example.surveyapp.repositories.UserRepository
 import com.example.surveyapp.viewmodels.UserViewModel
 import com.example.surveyapp.viewmodels.UserViewModelFactory
 
+/**
+ * Activity for user login.
+ */
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var userViewModel: UserViewModel
@@ -21,6 +24,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        // Initialize the ViewModel
         val userDao = SurveyDatabase.getDatabase(application).userDao()
         val repository = UserRepository(userDao)
         val factory = UserViewModelFactory(repository)
@@ -30,6 +34,7 @@ class LoginActivity : AppCompatActivity() {
         val password = findViewById<EditText>(R.id.password)
         val loginButton = findViewById<Button>(R.id.loginButton)
 
+        // Handle login button click
         loginButton.setOnClickListener {
             userViewModel.getUser(username.text.toString(), password.text.toString()) { user ->
                 if (user != null) {

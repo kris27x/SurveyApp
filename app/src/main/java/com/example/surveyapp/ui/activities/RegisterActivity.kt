@@ -13,6 +13,9 @@ import com.example.surveyapp.repositories.UserRepository
 import com.example.surveyapp.viewmodels.UserViewModel
 import com.example.surveyapp.viewmodels.UserViewModelFactory
 
+/**
+ * Activity for user registration.
+ */
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var userViewModel: UserViewModel
@@ -21,6 +24,7 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        // Initialize the ViewModel
         val userDao = SurveyDatabase.getDatabase(application).userDao()
         val repository = UserRepository(userDao)
         val factory = UserViewModelFactory(repository)
@@ -30,9 +34,9 @@ class RegisterActivity : AppCompatActivity() {
         val password = findViewById<EditText>(R.id.password)
         val registerButton = findViewById<Button>(R.id.registerButton)
 
+        // Handle register button click
         registerButton.setOnClickListener {
             val user = User(
-                id = 0, // Auto-generated
                 username = username.text.toString(),
                 password = password.text.toString(),
                 isAdmin = false // Default to false for regular users

@@ -1,5 +1,8 @@
 package com.example.surveyapp.utils
 
+/**
+ * Utility object for handling Likert scale values.
+ */
 object LikertScale {
     const val STRONGLY_DISAGREE = 1
     const val DISAGREE = 2
