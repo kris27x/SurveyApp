@@ -13,7 +13,14 @@ import com.example.surveyapp.models.*
 @Database(entities = [User::class, Survey::class, Question::class, Answer::class], version = 1)
 abstract class SurveyDatabase : RoomDatabase() {
 
+    /**
+     * Provides access to UserDao for performing user-related database operations.
+     */
     abstract fun userDao(): UserDao
+
+    /**
+     * Provides access to SurveyDao for performing survey-related database operations.
+     */
     abstract fun surveyDao(): SurveyDao
 
     companion object {
@@ -27,6 +34,7 @@ abstract class SurveyDatabase : RoomDatabase() {
          * @return The singleton instance of SurveyDatabase.
          */
         fun getDatabase(context: Context): SurveyDatabase {
+            // Use the double-checked locking pattern to ensure thread safety
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,

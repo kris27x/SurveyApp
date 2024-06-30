@@ -10,6 +10,7 @@ import com.example.surveyapp.models.User
  */
 @Dao
 interface UserDao {
+
     /**
      * Inserts a new user into the database.
      *

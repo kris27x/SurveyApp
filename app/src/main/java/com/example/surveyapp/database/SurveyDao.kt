@@ -14,6 +14,7 @@ import com.example.surveyapp.models.Answer
  */
 @Dao
 interface SurveyDao {
+
     /**
      * Inserts a new survey into the database.
      *
@@ -98,4 +99,13 @@ interface SurveyDao {
      */
     @Query("SELECT * FROM answers WHERE questionId = :questionId")
     suspend fun getAnswersForQuestion(questionId: Int): List<Answer>
+
+    /**
+     * Fetches a survey by ID.
+     *
+     * @param surveyId The ID of the survey.
+     * @return The survey with the specified ID, or null if not found.
+     */
+    @Query("SELECT * FROM surveys WHERE id = :surveyId")
+    suspend fun getSurveyById(surveyId: Int): Survey?
 }

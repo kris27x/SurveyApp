@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.example.surveyapp.R
 import com.example.surveyapp.database.SurveyDatabase
 import com.example.surveyapp.repositories.UserRepository
@@ -18,36 +18,45 @@ import com.example.surveyapp.viewmodels.UserViewModelFactory
  */
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var userViewModel: UserViewModel
+    private lateinit var usernameEditText: EditText
+    private lateinit var passwordEditText: EditText
+    private lateinit var loginButton: Button
+    private val userViewModel: UserViewModel by viewModels {
+        val userDao = SurveyDatabase.getDatabase(application).userDao()
+        UserViewModelFactory(UserRepository(userDao))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Initialize the ViewModel
-        val userDao = SurveyDatabase.getDatabase(application).userDao()
-        val repository = UserRepository(userDao)
-        val factory = UserViewModelFactory(repository)
-        userViewModel = ViewModelProvider(this, factory).get(UserViewModel::class.java)
+        // Initialize UI components
+        usernameEditText = findViewById(R.id.username)
+        passwordEditText = findViewById(R.id.password)
+        loginButton = findViewById(R.id.loginButton)
 
-        val username = findViewById<EditText>(R.id.username)
-        val password = findViewById<EditText>(R.id.password)
-        val loginButton = findViewById<Button>(R.id.loginButton)
-
-        // Handle login button click
+        // Set click listener for login button
         loginButton.setOnClickListener {
-            userViewModel.getUser(username.text.toString(), password.text.toString()) { user ->
-                if (user != null) {
-                    Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
-                    val intent = if (user.isAdmin) {
-                        Intent(this, AdminDashboardActivity::class.java)
+            val username = usernameEditText.text.toString().trim()
+            val password = passwordEditText.text.toString().trim()
+
+            if (username.isNotEmpty() && password.isNotEmpty()) {
+                userViewModel.getUser(username, password) { user ->
+                    if (user != null) {
+                        Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
+                        val intent = if (user.isAdmin) {
+                            Intent(this, AdminDashboardActivity::class.java)
+                        } else {
+                            Intent(this, UserDashboardActivity::class.java)
+                        }
+                        startActivity(intent)
+                        finish() // Close the login activity
                     } else {
-                        Intent(this, UserDashboardActivity::class.java)
+                        Toast.makeText(this, "Invalid Credentials", Toast.LENGTH_SHORT).show()
                     }
-                    startActivity(intent)
-                } else {
-                    Toast.makeText(this, "Invalid Credentials", Toast.LENGTH_SHORT).show()
                 }
+            } else {
+                Toast.makeText(this, "Please enter both username and password", Toast.LENGTH_SHORT).show()
             }
         }
     }

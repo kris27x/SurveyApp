@@ -37,4 +37,38 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
             callback(user)
         }
     }
+
+    /**
+     * Updates an existing user.
+     *
+     * @param user The user to update.
+     */
+    fun updateUser(user: User) {
+        viewModelScope.launch {
+            repository.updateUser(user)
+        }
+    }
+
+    /**
+     * Deletes a user.
+     *
+     * @param user The user to delete.
+     */
+    fun deleteUser(user: User) {
+        viewModelScope.launch {
+            repository.deleteUser(user)
+        }
+    }
+
+    /**
+     * Fetches all users.
+     *
+     * @param callback The callback to invoke with the list of users.
+     */
+    fun getAllUsers(callback: (List<User>) -> Unit) {
+        viewModelScope.launch {
+            val users = repository.getAllUsers()
+            callback(users)
+        }
+    }
 }

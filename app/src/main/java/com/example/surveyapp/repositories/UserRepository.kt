@@ -30,4 +30,40 @@ class UserRepository(private val userDao: UserDao) {
     suspend fun getUser(username: String, password: String): User? {
         return userDao.getUser(username, password)
     }
+
+    /**
+     * Updates an existing user.
+     *
+     * @param user The user to update.
+     */
+    suspend fun updateUser(user: User) {
+        userDao.updateUser(user)
+    }
+
+    /**
+     * Deletes a user.
+     *
+     * @param user The user to delete.
+     */
+    suspend fun deleteUser(user: User) {
+        userDao.deleteUser(user)
+    }
+
+    /**
+     * Fetches all admin users.
+     *
+     * @return A list of admin users.
+     */
+    suspend fun getAdminUsers(): List<User> {
+        return userDao.getAdminUsers()
+    }
+
+    /**
+     * Fetches all users.
+     *
+     * @return A list of all users.
+     */
+    suspend fun getAllUsers(): List<User> {
+        return userDao.getAllUsers()
+    }
 }

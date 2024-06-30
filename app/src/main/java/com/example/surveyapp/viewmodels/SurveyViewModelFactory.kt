@@ -2,14 +2,14 @@ package com.example.surveyapp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.surveyapp.repositories.UserRepository
+import com.example.surveyapp.repositories.SurveyRepository
 
 /**
- * Factory for creating a UserViewModel with a repository.
+ * Factory for creating a SurveyViewModel with a repository.
  *
- * @property repository The repository for accessing user data.
+ * @property repository The repository for accessing survey data.
  */
-class UserViewModelFactory(private val repository: UserRepository) : ViewModelProvider.NewInstanceFactory() {
+class SurveyViewModelFactory(private val repository: SurveyRepository) : ViewModelProvider.NewInstanceFactory() {
 
     /**
      * Creates a new instance of the given `Class`, with the repository injected.
@@ -19,9 +19,9 @@ class UserViewModelFactory(private val repository: UserRepository) : ViewModelPr
      * @throws IllegalArgumentException if the model class is unknown.
      */
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(UserViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(SurveyViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return UserViewModel(repository) as T
+            return SurveyViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

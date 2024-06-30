@@ -106,4 +106,14 @@ class SurveyRepository(private val surveyDao: SurveyDao) {
     suspend fun getAnswersForQuestion(questionId: Int): List<Answer> {
         return surveyDao.getAnswersForQuestion(questionId)
     }
+
+    /**
+     * Fetches a survey by ID.
+     *
+     * @param surveyId The ID of the survey.
+     * @return The survey with the specified ID, or null if not found.
+     */
+    suspend fun getSurveyById(surveyId: Int): Survey? {
+        return surveyDao.getSurveyById(surveyId)
+    }
 }

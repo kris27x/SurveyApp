@@ -4,6 +4,23 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Add UI components for editing survey -->
+    <EditText
+        android:id="@+id/editTextSurveyTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Survey Title" />
 
+    <EditText
+        android:id="@+id/editTextSurveyDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Survey Description"
+        android:paddingTop="8dp" />
+
+    <Button
+        android:id="@+id/buttonUpdateSurvey"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Update Survey"
+        android:paddingTop="16dp" />
 </LinearLayout>

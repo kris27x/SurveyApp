@@ -129,4 +129,17 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
             callback(answers)
         }
     }
+
+    /**
+     * Fetches a survey by ID.
+     *
+     * @param surveyId The ID of the survey.
+     * @param callback The callback to invoke with the fetched survey.
+     */
+    fun getSurveyById(surveyId: Int, callback: (Survey?) -> Unit) {
+        viewModelScope.launch {
+            val survey = repository.getSurveyById(surveyId)
+            callback(survey)
+        }
+    }
 }
