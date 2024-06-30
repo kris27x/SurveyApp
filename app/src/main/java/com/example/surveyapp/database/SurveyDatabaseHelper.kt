@@ -8,9 +8,15 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.example.surveyapp.models.Question
 import com.example.surveyapp.models.Survey
 
+/**
+ * Helper class to manage database creation, connection, and version management for the Survey app.
+ *
+ * @param context The application context.
+ */
 class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     override fun onCreate(db: SQLiteDatabase) {
+        // Create the users table
         val createUserTable = """
             CREATE TABLE $TABLE_USERS (
                 $COLUMN_USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,6 +26,7 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
             )
         """.trimIndent()
 
+        // Create the surveys table
         val createSurveyTable = """
             CREATE TABLE $TABLE_SURVEYS (
                 $COLUMN_SURVEY_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,6 +35,7 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
             )
         """.trimIndent()
 
+        // Create the questions table
         val createQuestionTable = """
             CREATE TABLE $TABLE_QUESTIONS (
                 $COLUMN_QUESTION_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,6 +45,7 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
             )
         """.trimIndent()
 
+        // Create the answers table
         val createAnswerTable = """
             CREATE TABLE $TABLE_ANSWERS (
                 $COLUMN_ANSWER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,10 +64,12 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        // Drop existing tables if they exist
         db.execSQL("DROP TABLE IF EXISTS $TABLE_ANSWERS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_QUESTIONS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_SURVEYS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
+        // Recreate tables
         onCreate(db)
     }
 
@@ -86,6 +97,12 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
         const val COLUMN_ANSWER_VALUE = "answerValue"
     }
 
+    /**
+     * Inserts a new survey into the database.
+     *
+     * @param survey The survey to insert.
+     * @return The ID of the inserted survey.
+     */
     fun insertSurvey(survey: Survey): Long {
         val db = this.writableDatabase
         val values = ContentValues().apply {
@@ -97,6 +114,11 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
         return id
     }
 
+    /**
+     * Fetches all surveys from the database.
+     *
+     * @return A list of all surveys.
+     */
     fun getAllSurveys(): List<Survey> {
         val surveys = mutableListOf<Survey>()
         val db = this.readableDatabase
@@ -116,6 +138,12 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
         return surveys
     }
 
+    /**
+     * Deletes a survey from the database.
+     *
+     * @param surveyId The ID of the survey to delete.
+     * @return The number of rows affected.
+     */
     fun deleteSurvey(surveyId: Int): Int {
         val db = this.writableDatabase
         val result = db.delete(TABLE_SURVEYS, "$COLUMN_SURVEY_ID = ?", arrayOf(surveyId.toString()))
@@ -123,6 +151,12 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
         return result
     }
 
+    /**
+     * Updates a question in the database.
+     *
+     * @param question The question to update.
+     * @return The number of rows affected.
+     */
     fun updateQuestion(question: Question): Int {
         val db = this.writableDatabase
         val values = ContentValues().apply {
@@ -133,6 +167,12 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
         return result
     }
 
+    /**
+     * Deletes a question from the database.
+     *
+     * @param questionId The ID of the question to delete.
+     * @return The number of rows affected.
+     */
     fun deleteQuestion(questionId: Int): Int {
         val db = this.writableDatabase
         val result = db.delete(TABLE_QUESTIONS, "$COLUMN_QUESTION_ID = ?", arrayOf(questionId.toString()))
@@ -140,6 +180,12 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
         return result
     }
 
+    /**
+     * Fetches all questions for a specific survey from the database.
+     *
+     * @param surveyId The ID of the survey.
+     * @return A list of questions for the survey.
+     */
     fun getAllQuestions(surveyId: Int): List<Question> {
         val questions = mutableListOf<Question>()
         val db = this.readableDatabase
