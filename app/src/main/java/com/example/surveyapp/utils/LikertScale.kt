@@ -2,6 +2,7 @@ package com.example.surveyapp.utils
 
 /**
  * Utility object for handling Likert scale values.
+ * Provides constants, validation, and conversion functions for Likert scale.
  */
 object LikertScale {
     const val STRONGLY_DISAGREE = 1

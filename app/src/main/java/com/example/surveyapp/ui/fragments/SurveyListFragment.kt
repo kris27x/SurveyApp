@@ -11,9 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
-import com.example.surveyapp.database.SurveyDatabase
 import com.example.surveyapp.models.Survey
-import com.example.surveyapp.repositories.SurveyRepository
 import com.example.surveyapp.ui.activities.TakeSurveyActivity
 import com.example.surveyapp.viewmodels.SurveyViewModel
 import com.example.surveyapp.viewmodels.SurveyViewModelFactory
@@ -26,8 +24,7 @@ class SurveyListFragment : Fragment() {
     private lateinit var surveyRecyclerView: RecyclerView
     private lateinit var surveyAdapter: SurveyAdapter
     private val surveyViewModel: SurveyViewModel by activityViewModels {
-        val surveyDao = SurveyDatabase.getDatabase(requireContext().applicationContext).surveyDao()
-        SurveyViewModelFactory(SurveyRepository(surveyDao))
+        SurveyViewModelFactory(requireContext().applicationContext)
     }
 
     override fun onCreateView(

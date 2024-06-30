@@ -1,16 +1,18 @@
 package com.example.surveyapp.repositories
 
-import com.example.surveyapp.database.SurveyDao
-import com.example.surveyapp.models.Survey
-import com.example.surveyapp.models.Question
+import android.content.ContentValues
+import android.database.Cursor
+import com.example.surveyapp.database.SurveyDatabaseHelper
 import com.example.surveyapp.models.Answer
+import com.example.surveyapp.models.Question
+import com.example.surveyapp.models.Survey
 
 /**
  * Repository for managing survey data operations.
  *
- * @property surveyDao The DAO for accessing survey data.
+ * @property dbHelper The database helper for accessing survey data.
  */
-class SurveyRepository(private val surveyDao: SurveyDao) {
+class SurveyRepository(private val dbHelper: SurveyDatabaseHelper) {
 
     /**
      * Inserts a new survey.
@@ -18,8 +20,13 @@ class SurveyRepository(private val surveyDao: SurveyDao) {
      * @param survey The survey to insert.
      * @return The ID of the inserted survey.
      */
-    suspend fun insertSurvey(survey: Survey): Long {
-        return surveyDao.insertSurvey(survey)
+    fun insertSurvey(survey: Survey): Long {
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put(SurveyDatabaseHelper.COLUMN_SURVEY_TITLE, survey.title)
+            put(SurveyDatabaseHelper.COLUMN_SURVEY_DESCRIPTION, survey.description)
+        }
+        return db.insert(SurveyDatabaseHelper.TABLE_SURVEYS, null, values)
     }
 
     /**
@@ -27,17 +34,23 @@ class SurveyRepository(private val surveyDao: SurveyDao) {
      *
      * @param survey The survey to update.
      */
-    suspend fun updateSurvey(survey: Survey) {
-        surveyDao.updateSurvey(survey)
+    fun updateSurvey(survey: Survey) {
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put(SurveyDatabaseHelper.COLUMN_SURVEY_TITLE, survey.title)
+            put(SurveyDatabaseHelper.COLUMN_SURVEY_DESCRIPTION, survey.description)
+        }
+        db.update(SurveyDatabaseHelper.TABLE_SURVEYS, values, "${SurveyDatabaseHelper.COLUMN_SURVEY_ID} = ?", arrayOf(survey.id.toString()))
     }
 
     /**
      * Deletes a survey.
      *
-     * @param survey The survey to delete.
+     * @param surveyId The survey ID to delete.
      */
-    suspend fun deleteSurvey(survey: Survey) {
-        surveyDao.deleteSurvey(survey)
+    fun deleteSurvey(surveyId: Int) {
+        val db = dbHelper.writableDatabase
+        db.delete(SurveyDatabaseHelper.TABLE_SURVEYS, "${SurveyDatabaseHelper.COLUMN_SURVEY_ID} = ?", arrayOf(surveyId.toString()))
     }
 
     /**
@@ -45,8 +58,27 @@ class SurveyRepository(private val surveyDao: SurveyDao) {
      *
      * @return A list of all surveys.
      */
-    suspend fun getAllSurveys(): List<Survey> {
-        return surveyDao.getAllSurveys()
+    fun getAllSurveys(): List<Survey> {
+        val db = dbHelper.readableDatabase
+        val cursor: Cursor = db.query(
+            SurveyDatabaseHelper.TABLE_SURVEYS,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+
+        val surveys = mutableListOf<Survey>()
+        while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_ID))
+            val title = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_TITLE))
+            val description = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_DESCRIPTION))
+            surveys.add(Survey(id, title, description))
+        }
+        cursor.close()
+        return surveys
     }
 
     /**
@@ -55,8 +87,13 @@ class SurveyRepository(private val surveyDao: SurveyDao) {
      * @param question The question to insert.
      * @return The ID of the inserted question.
      */
-    suspend fun insertQuestion(question: Question): Long {
-        return surveyDao.insertQuestion(question)
+    fun insertQuestion(question: Question): Long {
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put(SurveyDatabaseHelper.COLUMN_SURVEY_ID, question.surveyId)
+            put(SurveyDatabaseHelper.COLUMN_QUESTION_TEXT, question.text)
+        }
+        return db.insert(SurveyDatabaseHelper.TABLE_QUESTIONS, null, values)
     }
 
     /**
@@ -64,8 +101,13 @@ class SurveyRepository(private val surveyDao: SurveyDao) {
      *
      * @param question The question to update.
      */
-    suspend fun updateQuestion(question: Question) {
-        surveyDao.updateQuestion(question)
+    fun updateQuestion(question: Question) {
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put(SurveyDatabaseHelper.COLUMN_SURVEY_ID, question.surveyId)
+            put(SurveyDatabaseHelper.COLUMN_QUESTION_TEXT, question.text)
+        }
+        db.update(SurveyDatabaseHelper.TABLE_QUESTIONS, values, "${SurveyDatabaseHelper.COLUMN_QUESTION_ID} = ?", arrayOf(question.id.toString()))
     }
 
     /**
@@ -73,8 +115,9 @@ class SurveyRepository(private val surveyDao: SurveyDao) {
      *
      * @param question The question to delete.
      */
-    suspend fun deleteQuestion(question: Question) {
-        surveyDao.deleteQuestion(question)
+    fun deleteQuestion(question: Question) {
+        val db = dbHelper.writableDatabase
+        db.delete(SurveyDatabaseHelper.TABLE_QUESTIONS, "${SurveyDatabaseHelper.COLUMN_QUESTION_ID} = ?", arrayOf(question.id.toString()))
     }
 
     /**
@@ -83,8 +126,26 @@ class SurveyRepository(private val surveyDao: SurveyDao) {
      * @param surveyId The ID of the survey.
      * @return A list of questions for the specified survey.
      */
-    suspend fun getQuestionsForSurvey(surveyId: Int): List<Question> {
-        return surveyDao.getQuestionsForSurvey(surveyId)
+    fun getQuestionsForSurvey(surveyId: Int): List<Question> {
+        val db = dbHelper.readableDatabase
+        val cursor: Cursor = db.query(
+            SurveyDatabaseHelper.TABLE_QUESTIONS,
+            null,
+            "${SurveyDatabaseHelper.COLUMN_SURVEY_ID} = ?",
+            arrayOf(surveyId.toString()),
+            null,
+            null,
+            null
+        )
+
+        val questions = mutableListOf<Question>()
+        while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_QUESTION_ID))
+            val text = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_QUESTION_TEXT))
+            questions.add(Question(id, surveyId, text))
+        }
+        cursor.close()
+        return questions
     }
 
     /**
@@ -93,8 +154,14 @@ class SurveyRepository(private val surveyDao: SurveyDao) {
      * @param answer The answer to insert.
      * @return The ID of the inserted answer.
      */
-    suspend fun insertAnswer(answer: Answer): Long {
-        return surveyDao.insertAnswer(answer)
+    fun insertAnswer(answer: Answer): Long {
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put(SurveyDatabaseHelper.COLUMN_QUESTION_ID, answer.questionId)
+            put(SurveyDatabaseHelper.COLUMN_USER_ID, answer.userId)
+            put(SurveyDatabaseHelper.COLUMN_ANSWER_VALUE, answer.answerValue)
+        }
+        return db.insert(SurveyDatabaseHelper.TABLE_ANSWERS, null, values)
     }
 
     /**
@@ -103,8 +170,27 @@ class SurveyRepository(private val surveyDao: SurveyDao) {
      * @param questionId The ID of the question.
      * @return A list of answers for the specified question.
      */
-    suspend fun getAnswersForQuestion(questionId: Int): List<Answer> {
-        return surveyDao.getAnswersForQuestion(questionId)
+    fun getAnswersForQuestion(questionId: Int): List<Answer> {
+        val db = dbHelper.readableDatabase
+        val cursor: Cursor = db.query(
+            SurveyDatabaseHelper.TABLE_ANSWERS,
+            null,
+            "${SurveyDatabaseHelper.COLUMN_QUESTION_ID} = ?",
+            arrayOf(questionId.toString()),
+            null,
+            null,
+            null
+        )
+
+        val answers = mutableListOf<Answer>()
+        while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_ANSWER_ID))
+            val userId = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USER_ID))
+            val answerValue = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_ANSWER_VALUE))
+            answers.add(Answer(id, questionId, userId, answerValue))
+        }
+        cursor.close()
+        return answers
     }
 
     /**
@@ -113,7 +199,27 @@ class SurveyRepository(private val surveyDao: SurveyDao) {
      * @param surveyId The ID of the survey.
      * @return The survey with the specified ID, or null if not found.
      */
-    suspend fun getSurveyById(surveyId: Int): Survey? {
-        return surveyDao.getSurveyById(surveyId)
+    fun getSurveyById(surveyId: Int): Survey? {
+        val db = dbHelper.readableDatabase
+        val cursor: Cursor = db.query(
+            SurveyDatabaseHelper.TABLE_SURVEYS,
+            null,
+            "${SurveyDatabaseHelper.COLUMN_SURVEY_ID} = ?",
+            arrayOf(surveyId.toString()),
+            null,
+            null,
+            null
+        )
+
+        return if (cursor.moveToFirst()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_ID))
+            val title = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_TITLE))
+            val description = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_DESCRIPTION))
+            cursor.close()
+            Survey(id, title, description)
+        } else {
+            cursor.close()
+            null
+        }
     }
 }

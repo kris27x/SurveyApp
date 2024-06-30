@@ -10,10 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
-import com.example.surveyapp.database.SurveyDatabase
 import com.example.surveyapp.models.Answer
 import com.example.surveyapp.models.Question
-import com.example.surveyapp.repositories.SurveyRepository
 import com.example.surveyapp.viewmodels.SurveyViewModel
 import com.example.surveyapp.viewmodels.SurveyViewModelFactory
 
@@ -29,8 +27,7 @@ class ViewResultsActivity : AppCompatActivity() {
     private lateinit var resultsRecyclerView: RecyclerView
     private lateinit var resultsAdapter: ResultsAdapter
     private val surveyViewModel: SurveyViewModel by viewModels {
-        val surveyDao = SurveyDatabase.getDatabase(application).surveyDao()
-        SurveyViewModelFactory(SurveyRepository(surveyDao))
+        SurveyViewModelFactory(this)
     }
     private var surveyId: Int = 0
 
@@ -61,7 +58,11 @@ class ViewResultsActivity : AppCompatActivity() {
     }
 }
 
-// Adapter for displaying survey results
+/**
+ * Adapter for displaying survey results.
+ *
+ * @property onSurveyClick Callback to handle survey item click events.
+ */
 class ResultsAdapter : RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder>() {
 
     private var questions: List<Question> = emptyList()
@@ -80,20 +81,42 @@ class ResultsAdapter : RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder>() 
 
     override fun getItemCount(): Int = questions.size
 
+    /**
+     * Submits a new list of questions to the adapter.
+     *
+     * @param questionList The new list of questions.
+     */
     fun submitList(questionList: List<Question>) {
         questions = questionList
         notifyDataSetChanged()
     }
 
+    /**
+     * Updates the answers for a specific question.
+     *
+     * @param questionId The ID of the question.
+     * @param answers The list of answers for the question.
+     */
     fun updateAnswers(questionId: Int, answers: List<Answer>) {
         answersMap[questionId] = answers
         notifyItemChanged(questions.indexOfFirst { it.id == questionId })
     }
 
+    /**
+     * ViewHolder class for displaying survey results.
+     *
+     * @property itemView The view of the result item.
+     */
     class ResultsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val questionTextView: TextView = itemView.findViewById(R.id.textViewQuestion)
         private val answersTextView: TextView = itemView.findViewById(R.id.textViewAnswers)
 
+        /**
+         * Binds the question and its answers to the views.
+         *
+         * @param question The question to bind.
+         * @param answers The list of answers to bind.
+         */
         fun bind(question: Question, answers: List<Answer>) {
             questionTextView.text = question.text
             answersTextView.text = answers.joinToString(separator = "\n") { "User ${it.userId}: ${it.answerValue}" }

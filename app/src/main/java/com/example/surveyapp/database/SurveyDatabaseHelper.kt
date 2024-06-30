@@ -5,8 +5,10 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.surveyapp.models.Answer
 import com.example.surveyapp.models.Question
 import com.example.surveyapp.models.Survey
+import com.example.surveyapp.models.User
 
 /**
  * Helper class to manage database creation, connection, and version management for the Survey app.
@@ -16,7 +18,6 @@ import com.example.surveyapp.models.Survey
 class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     override fun onCreate(db: SQLiteDatabase) {
-        // Create the users table
         val createUserTable = """
             CREATE TABLE $TABLE_USERS (
                 $COLUMN_USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,7 +27,6 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
             )
         """.trimIndent()
 
-        // Create the surveys table
         val createSurveyTable = """
             CREATE TABLE $TABLE_SURVEYS (
                 $COLUMN_SURVEY_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,25 +35,23 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
             )
         """.trimIndent()
 
-        // Create the questions table
         val createQuestionTable = """
             CREATE TABLE $TABLE_QUESTIONS (
                 $COLUMN_QUESTION_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                $COLUMN_SURVEY_ID INTEGER NOT NULL,
+                $COLUMN_SURVEY_ID_QUESTION INTEGER NOT NULL,
                 $COLUMN_QUESTION_TEXT TEXT NOT NULL,
-                FOREIGN KEY ($COLUMN_SURVEY_ID) REFERENCES $TABLE_SURVEYS($COLUMN_SURVEY_ID)
+                FOREIGN KEY ($COLUMN_SURVEY_ID_QUESTION) REFERENCES $TABLE_SURVEYS($COLUMN_SURVEY_ID)
             )
         """.trimIndent()
 
-        // Create the answers table
         val createAnswerTable = """
             CREATE TABLE $TABLE_ANSWERS (
                 $COLUMN_ANSWER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                $COLUMN_QUESTION_ID INTEGER NOT NULL,
-                $COLUMN_USER_ID INTEGER NOT NULL,
+                $COLUMN_QUESTION_ID_ANSWER INTEGER NOT NULL,
+                $COLUMN_USER_ID_ANSWER INTEGER NOT NULL,
                 $COLUMN_ANSWER_VALUE INTEGER NOT NULL,
-                FOREIGN KEY ($COLUMN_QUESTION_ID) REFERENCES $TABLE_QUESTIONS($COLUMN_QUESTION_ID),
-                FOREIGN KEY ($COLUMN_USER_ID) REFERENCES $TABLE_USERS($COLUMN_USER_ID)
+                FOREIGN KEY ($COLUMN_QUESTION_ID_ANSWER) REFERENCES $TABLE_QUESTIONS($COLUMN_QUESTION_ID),
+                FOREIGN KEY ($COLUMN_USER_ID_ANSWER) REFERENCES $TABLE_USERS($COLUMN_USER_ID)
             )
         """.trimIndent()
 
@@ -64,12 +62,10 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // Drop existing tables if they exist
         db.execSQL("DROP TABLE IF EXISTS $TABLE_ANSWERS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_QUESTIONS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_SURVEYS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
-        // Recreate tables
         onCreate(db)
     }
 
@@ -91,18 +87,16 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
         const val TABLE_QUESTIONS = "questions"
         const val COLUMN_QUESTION_ID = "id"
         const val COLUMN_QUESTION_TEXT = "text"
+        const val COLUMN_SURVEY_ID_QUESTION = "surveyId" // Renamed to avoid conflict
 
         const val TABLE_ANSWERS = "answers"
         const val COLUMN_ANSWER_ID = "id"
         const val COLUMN_ANSWER_VALUE = "answerValue"
+        const val COLUMN_QUESTION_ID_ANSWER = "questionId"
+        const val COLUMN_USER_ID_ANSWER = "userId"
     }
 
-    /**
-     * Inserts a new survey into the database.
-     *
-     * @param survey The survey to insert.
-     * @return The ID of the inserted survey.
-     */
+    // CRUD methods for Survey
     fun insertSurvey(survey: Survey): Long {
         val db = this.writableDatabase
         val values = ContentValues().apply {
@@ -114,11 +108,6 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
         return id
     }
 
-    /**
-     * Fetches all surveys from the database.
-     *
-     * @return A list of all surveys.
-     */
     fun getAllSurveys(): List<Survey> {
         val surveys = mutableListOf<Survey>()
         val db = this.readableDatabase
@@ -138,12 +127,6 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
         return surveys
     }
 
-    /**
-     * Deletes a survey from the database.
-     *
-     * @param surveyId The ID of the survey to delete.
-     * @return The number of rows affected.
-     */
     fun deleteSurvey(surveyId: Int): Int {
         val db = this.writableDatabase
         val result = db.delete(TABLE_SURVEYS, "$COLUMN_SURVEY_ID = ?", arrayOf(surveyId.toString()))
@@ -151,12 +134,48 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
         return result
     }
 
-    /**
-     * Updates a question in the database.
-     *
-     * @param question The question to update.
-     * @return The number of rows affected.
-     */
+    fun updateSurvey(survey: Survey): Int {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_SURVEY_TITLE, survey.title)
+            put(COLUMN_SURVEY_DESCRIPTION, survey.description)
+        }
+        val result = db.update(TABLE_SURVEYS, values, "$COLUMN_SURVEY_ID = ?", arrayOf(survey.id.toString()))
+        db.close()
+        return result
+    }
+
+    // CRUD methods for Question
+    fun insertQuestion(question: Question): Long {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_SURVEY_ID_QUESTION, question.surveyId)
+            put(COLUMN_QUESTION_TEXT, question.text)
+        }
+        val id = db.insert(TABLE_QUESTIONS, null, values)
+        db.close()
+        return id
+    }
+
+    fun getQuestionsForSurvey(surveyId: Int): List<Question> {
+        val questions = mutableListOf<Question>()
+        val db = this.readableDatabase
+        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_QUESTIONS WHERE $COLUMN_SURVEY_ID_QUESTION = ?", arrayOf(surveyId.toString()))
+        if (cursor.moveToFirst()) {
+            do {
+                val question = Question(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_QUESTION_ID)),
+                    surveyId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SURVEY_ID_QUESTION)),
+                    text = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_QUESTION_TEXT))
+                )
+                questions.add(question)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return questions
+    }
+
     fun updateQuestion(question: Question): Int {
         val db = this.writableDatabase
         val values = ContentValues().apply {
@@ -167,12 +186,6 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
         return result
     }
 
-    /**
-     * Deletes a question from the database.
-     *
-     * @param questionId The ID of the question to delete.
-     * @return The number of rows affected.
-     */
     fun deleteQuestion(questionId: Int): Int {
         val db = this.writableDatabase
         val result = db.delete(TABLE_QUESTIONS, "$COLUMN_QUESTION_ID = ?", arrayOf(questionId.toString()))
@@ -180,28 +193,89 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
         return result
     }
 
-    /**
-     * Fetches all questions for a specific survey from the database.
-     *
-     * @param surveyId The ID of the survey.
-     * @return A list of questions for the survey.
-     */
-    fun getAllQuestions(surveyId: Int): List<Question> {
-        val questions = mutableListOf<Question>()
+    // CRUD methods for Answer
+    fun insertAnswer(answer: Answer): Long {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_QUESTION_ID_ANSWER, answer.questionId)
+            put(COLUMN_USER_ID_ANSWER, answer.userId)
+            put(COLUMN_ANSWER_VALUE, answer.answerValue)
+        }
+        val id = db.insert(TABLE_ANSWERS, null, values)
+        db.close()
+        return id
+    }
+
+    fun getAnswersForQuestion(questionId: Int): List<Answer> {
+        val answers = mutableListOf<Answer>()
         val db = this.readableDatabase
-        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_QUESTIONS WHERE $COLUMN_SURVEY_ID = ?", arrayOf(surveyId.toString()))
+        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_ANSWERS WHERE $COLUMN_QUESTION_ID_ANSWER = ?", arrayOf(questionId.toString()))
         if (cursor.moveToFirst()) {
             do {
-                val question = Question(
-                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_QUESTION_ID)),
-                    surveyId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SURVEY_ID)),
-                    text = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_QUESTION_TEXT))
+                val answer = Answer(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ANSWER_ID)),
+                    questionId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_QUESTION_ID_ANSWER)),
+                    userId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_USER_ID_ANSWER)),
+                    answerValue = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ANSWER_VALUE))
                 )
-                questions.add(question)
+                answers.add(answer)
             } while (cursor.moveToNext())
         }
         cursor.close()
         db.close()
-        return questions
+        return answers
+    }
+
+    // CRUD methods for User
+    fun insertUser(user: User): Long {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_USERNAME, user.username)
+            put(COLUMN_PASSWORD, user.password)
+            put(COLUMN_IS_ADMIN, if (user.isAdmin) 1 else 0)
+        }
+        val id = db.insert(TABLE_USERS, null, values)
+        db.close()
+        return id
+    }
+
+    fun getUser(username: String, password: String): User? {
+        val db = this.readableDatabase
+        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_USERS WHERE $COLUMN_USERNAME = ? AND $COLUMN_PASSWORD = ?", arrayOf(username, password))
+        return if (cursor.moveToFirst()) {
+            val user = User(
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_USER_ID)),
+                username = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME)),
+                password = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PASSWORD)),
+                isAdmin = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_ADMIN)) == 1
+            )
+            cursor.close()
+            db.close()
+            user
+        } else {
+            cursor.close()
+            db.close()
+            null
+        }
+    }
+
+    // Additional CRUD methods for User
+    fun updateUser(user: User): Int {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_USERNAME, user.username)
+            put(COLUMN_PASSWORD, user.password)
+            put(COLUMN_IS_ADMIN, if (user.isAdmin) 1 else 0)
+        }
+        val result = db.update(TABLE_USERS, values, "$COLUMN_USER_ID = ?", arrayOf(user.id.toString()))
+        db.close()
+        return result
+    }
+
+    fun deleteUser(userId: Int): Int {
+        val db = this.writableDatabase
+        val result = db.delete(TABLE_USERS, "$COLUMN_USER_ID = ?", arrayOf(userId.toString()))
+        db.close()
+        return result
     }
 }

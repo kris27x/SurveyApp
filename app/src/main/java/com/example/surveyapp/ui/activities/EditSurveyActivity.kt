@@ -9,10 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
-import com.example.surveyapp.database.SurveyDatabase
 import com.example.surveyapp.models.Question
 import com.example.surveyapp.models.Survey
-import com.example.surveyapp.repositories.SurveyRepository
 import com.example.surveyapp.ui.adapters.QuestionAdapter
 import com.example.surveyapp.viewmodels.SurveyViewModel
 import com.example.surveyapp.viewmodels.SurveyViewModelFactory
@@ -33,8 +31,7 @@ class EditSurveyActivity : AppCompatActivity() {
     private lateinit var questionRecyclerView: RecyclerView
     private lateinit var questionAdapter: QuestionAdapter
     private val surveyViewModel: SurveyViewModel by viewModels {
-        val surveyDao = SurveyDatabase.getDatabase(application).surveyDao()
-        SurveyViewModelFactory(SurveyRepository(surveyDao))
+        SurveyViewModelFactory(this)
     }
 
     private var surveyId: Int = 0
@@ -115,6 +112,10 @@ class EditSurveyActivity : AppCompatActivity() {
     private fun onUpdateQuestion(question: Question) {
         surveyViewModel.updateQuestion(question)
         Toast.makeText(this, "Question Updated", Toast.LENGTH_SHORT).show()
+        // Refresh the questions list
+        surveyViewModel.getQuestionsForSurvey(surveyId) { questions ->
+            questionAdapter.submitList(questions)
+        }
     }
 
     /**

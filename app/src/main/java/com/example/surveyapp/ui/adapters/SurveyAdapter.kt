@@ -8,9 +8,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
 import com.example.surveyapp.models.Survey
+import com.example.surveyapp.database.SurveyDatabaseHelper
 
 /**
  * Adapter for displaying the list of surveys.
+ *
+ * @property onSurveyClick Callback to handle survey item click events.
+ * @property onDeleteClick Callback to handle delete button click events.
  */
 class SurveyAdapter(
     private val onSurveyClick: (Survey) -> Unit,
@@ -32,16 +36,33 @@ class SurveyAdapter(
 
     override fun getItemCount(): Int = surveys.size
 
+    /**
+     * Submits a new list of surveys to the adapter.
+     *
+     * @param surveyList The new list of surveys.
+     */
     fun submitList(surveyList: List<Survey>) {
         surveys = surveyList
         notifyDataSetChanged()
     }
 
+    /**
+     * ViewHolder class for displaying survey items.
+     *
+     * @property itemView The view of the survey item.
+     */
     class SurveyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val surveyTitle: TextView = itemView.findViewById(R.id.textViewSurveyTitle)
         private val surveyDescription: TextView = itemView.findViewById(R.id.textViewSurveyDescription)
         private val deleteButton: Button = itemView.findViewById(R.id.buttonDeleteSurvey)
 
+        /**
+         * Binds the survey data to the views.
+         *
+         * @param survey The survey data to bind.
+         * @param onSurveyClick Callback to handle survey item click events.
+         * @param onDeleteClick Callback to handle delete button click events.
+         */
         fun bind(
             survey: Survey,
             onSurveyClick: (Survey) -> Unit,

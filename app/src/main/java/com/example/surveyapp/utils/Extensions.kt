@@ -7,21 +7,21 @@ import android.widget.EditText
 import android.widget.Toast
 
 /**
- * Utility extensions and functions for common operations.
+ * Utility extensions and functions for common operations in the Survey app.
  */
 
 /**
- * Shows a toast message.
+ * Extension function to show a toast message.
  *
  * @param message The message to display.
- * @param duration The duration of the toast.
+ * @param duration The duration of the toast (default is Toast.LENGTH_SHORT).
  */
 fun Context.showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, message, duration).show()
 }
 
 /**
- * Hides the soft keyboard.
+ * Extension function to hide the soft keyboard.
  */
 fun View.hideKeyboard() {
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -45,7 +45,7 @@ fun validateNotEmpty(editText: EditText, errorMessage: String): Boolean {
 }
 
 /**
- * Clears the text from an EditText.
+ * Extension function to clear the text from an EditText.
  */
 fun EditText.clearText() {
     this.text.clear()

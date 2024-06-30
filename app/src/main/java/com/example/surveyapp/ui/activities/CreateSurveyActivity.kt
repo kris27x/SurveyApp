@@ -7,9 +7,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.surveyapp.R
-import com.example.surveyapp.database.SurveyDatabase
 import com.example.surveyapp.models.Survey
-import com.example.surveyapp.repositories.SurveyRepository
 import com.example.surveyapp.viewmodels.SurveyViewModel
 import com.example.surveyapp.viewmodels.SurveyViewModelFactory
 
@@ -22,8 +20,7 @@ class CreateSurveyActivity : AppCompatActivity() {
     private lateinit var surveyDescriptionEditText: EditText
     private lateinit var createSurveyButton: Button
     private val surveyViewModel: SurveyViewModel by viewModels {
-        val surveyDao = SurveyDatabase.getDatabase(application).surveyDao()
-        SurveyViewModelFactory(SurveyRepository(surveyDao))
+        SurveyViewModelFactory(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

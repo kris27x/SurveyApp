@@ -11,10 +11,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
-import com.example.surveyapp.database.SurveyDatabase
+import com.example.surveyapp.database.SurveyDatabaseHelper
 import com.example.surveyapp.models.Answer
 import com.example.surveyapp.models.Question
-import com.example.surveyapp.repositories.SurveyRepository
 import com.example.surveyapp.viewmodels.SurveyViewModel
 import com.example.surveyapp.viewmodels.SurveyViewModelFactory
 
@@ -26,8 +25,7 @@ class ResultFragment : Fragment() {
     private lateinit var resultsRecyclerView: RecyclerView
     private lateinit var resultsAdapter: ResultsAdapter
     private val surveyViewModel: SurveyViewModel by activityViewModels {
-        val surveyDao = SurveyDatabase.getDatabase(requireContext().applicationContext).surveyDao()
-        SurveyViewModelFactory(SurveyRepository(surveyDao))
+        SurveyViewModelFactory(requireContext().applicationContext)
     }
 
     private var surveyId: Int = 0

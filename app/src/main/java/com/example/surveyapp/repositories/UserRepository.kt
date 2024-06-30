@@ -1,14 +1,17 @@
 package com.example.surveyapp.repositories
 
-import com.example.surveyapp.database.UserDao
+import android.content.ContentValues
+import android.content.Context
+import com.example.surveyapp.database.SurveyDatabaseHelper
 import com.example.surveyapp.models.User
 
 /**
  * Repository for managing user data operations.
  *
- * @property userDao The DAO for accessing user data.
+ * @property context The context for accessing resources and creating the database helper.
  */
-class UserRepository(private val userDao: UserDao) {
+class UserRepository(context: Context) {
+    private val dbHelper = SurveyDatabaseHelper(context)
 
     /**
      * Inserts a new user.
@@ -16,8 +19,14 @@ class UserRepository(private val userDao: UserDao) {
      * @param user The user to insert.
      * @return The ID of the inserted user.
      */
-    suspend fun insert(user: User): Long {
-        return userDao.insert(user)
+    fun insert(user: User): Long {
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put(SurveyDatabaseHelper.COLUMN_USERNAME, user.username)
+            put(SurveyDatabaseHelper.COLUMN_PASSWORD, user.password)
+            put(SurveyDatabaseHelper.COLUMN_IS_ADMIN, if (user.isAdmin) 1 else 0)
+        }
+        return db.insert(SurveyDatabaseHelper.TABLE_USERS, null, values)
     }
 
     /**
@@ -25,10 +34,30 @@ class UserRepository(private val userDao: UserDao) {
      *
      * @param username The username of the user.
      * @param password The password of the user.
-     * @return The user matching the given username and password, or null if no match is found.
+     * @return The user with the specified username and password, or null if not found.
      */
-    suspend fun getUser(username: String, password: String): User? {
-        return userDao.getUser(username, password)
+    fun getUser(username: String, password: String): User? {
+        val db = dbHelper.readableDatabase
+        val cursor = db.query(
+            SurveyDatabaseHelper.TABLE_USERS,
+            null,
+            "${SurveyDatabaseHelper.COLUMN_USERNAME} = ? AND ${SurveyDatabaseHelper.COLUMN_PASSWORD} = ?",
+            arrayOf(username, password),
+            null,
+            null,
+            null
+        )
+
+        return if (cursor.moveToFirst()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USER_ID))
+            val isAdmin = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_IS_ADMIN)) == 1
+            val user = User(id, username, password, isAdmin)
+            cursor.close()
+            user
+        } else {
+            cursor.close()
+            null
+        }
     }
 
     /**
@@ -36,8 +65,14 @@ class UserRepository(private val userDao: UserDao) {
      *
      * @param user The user to update.
      */
-    suspend fun updateUser(user: User) {
-        userDao.updateUser(user)
+    fun updateUser(user: User) {
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put(SurveyDatabaseHelper.COLUMN_USERNAME, user.username)
+            put(SurveyDatabaseHelper.COLUMN_PASSWORD, user.password)
+            put(SurveyDatabaseHelper.COLUMN_IS_ADMIN, if (user.isAdmin) 1 else 0)
+        }
+        db.update(SurveyDatabaseHelper.TABLE_USERS, values, "${SurveyDatabaseHelper.COLUMN_USER_ID} = ?", arrayOf(user.id.toString()))
     }
 
     /**
@@ -45,17 +80,37 @@ class UserRepository(private val userDao: UserDao) {
      *
      * @param user The user to delete.
      */
-    suspend fun deleteUser(user: User) {
-        userDao.deleteUser(user)
+    fun deleteUser(user: User) {
+        val db = dbHelper.writableDatabase
+        db.delete(SurveyDatabaseHelper.TABLE_USERS, "${SurveyDatabaseHelper.COLUMN_USER_ID} = ?", arrayOf(user.id.toString()))
     }
 
     /**
      * Fetches all admin users.
      *
-     * @return A list of admin users.
+     * @return A list of all admin users.
      */
-    suspend fun getAdminUsers(): List<User> {
-        return userDao.getAdminUsers()
+    fun getAdminUsers(): List<User> {
+        val db = dbHelper.readableDatabase
+        val cursor = db.query(
+            SurveyDatabaseHelper.TABLE_USERS,
+            null,
+            "${SurveyDatabaseHelper.COLUMN_IS_ADMIN} = ?",
+            arrayOf("1"),
+            null,
+            null,
+            null
+        )
+
+        val adminUsers = mutableListOf<User>()
+        while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USER_ID))
+            val username = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USERNAME))
+            val password = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_PASSWORD))
+            adminUsers.add(User(id, username, password, true))
+        }
+        cursor.close()
+        return adminUsers
     }
 
     /**
@@ -63,7 +118,27 @@ class UserRepository(private val userDao: UserDao) {
      *
      * @return A list of all users.
      */
-    suspend fun getAllUsers(): List<User> {
-        return userDao.getAllUsers()
+    fun getAllUsers(): List<User> {
+        val db = dbHelper.readableDatabase
+        val cursor = db.query(
+            SurveyDatabaseHelper.TABLE_USERS,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+
+        val users = mutableListOf<User>()
+        while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USER_ID))
+            val username = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USERNAME))
+            val password = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_PASSWORD))
+            val isAdmin = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_IS_ADMIN)) == 1
+            users.add(User(id, username, password, isAdmin))
+        }
+        cursor.close()
+        return users
     }
 }

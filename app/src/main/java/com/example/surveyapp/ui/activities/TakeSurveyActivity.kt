@@ -8,12 +8,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import com.example.surveyapp.R
-import com.example.surveyapp.database.SurveyDatabase
+import com.example.surveyapp.database.SurveyDatabaseHelper
 import com.example.surveyapp.models.Answer
 import com.example.surveyapp.models.Question
-import com.example.surveyapp.repositories.SurveyRepository
 import com.example.surveyapp.viewmodels.SurveyViewModel
 import com.example.surveyapp.viewmodels.SurveyViewModelFactory
 import com.example.surveyapp.utils.LikertScale
@@ -27,9 +25,9 @@ class TakeSurveyActivity : AppCompatActivity() {
         const val EXTRA_SURVEY_ID = "com.example.surveyapp.ui.activities.SURVEY_ID"
     }
 
+    private lateinit var surveyDatabaseHelper: SurveyDatabaseHelper
     private val surveyViewModel: SurveyViewModel by viewModels {
-        val surveyDao = SurveyDatabase.getDatabase(application).surveyDao()
-        SurveyViewModelFactory(SurveyRepository(surveyDao))
+        SurveyViewModelFactory(this)
     }
 
     private var surveyId: Int = 0
@@ -43,6 +41,9 @@ class TakeSurveyActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_take_survey)
+
+        // Initialize the database helper
+        surveyDatabaseHelper = SurveyDatabaseHelper(this)
 
         // Initialize UI components
         questionTextView = findViewById(R.id.textViewQuestion)

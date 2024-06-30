@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.surveyapp.R
-import com.example.surveyapp.database.SurveyDatabase
+import com.example.surveyapp.database.SurveyDatabaseHelper
 import com.example.surveyapp.repositories.UserRepository
 import com.example.surveyapp.viewmodels.UserViewModel
 import com.example.surveyapp.viewmodels.UserViewModelFactory
@@ -21,14 +21,17 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var usernameEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
+    private lateinit var surveyDatabaseHelper: SurveyDatabaseHelper
     private val userViewModel: UserViewModel by viewModels {
-        val userDao = SurveyDatabase.getDatabase(application).userDao()
-        UserViewModelFactory(UserRepository(userDao))
+        UserViewModelFactory(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        // Initialize the database helper
+        surveyDatabaseHelper = SurveyDatabaseHelper(this)
 
         // Initialize UI components
         usernameEditText = findViewById(R.id.username)

@@ -36,6 +36,11 @@ class QuestionAdapter(
 
     override fun getItemCount(): Int = questions.size
 
+    /**
+     * Submits a new list of questions to the adapter.
+     *
+     * @param questionList The new list of questions.
+     */
     fun submitList(questionList: List<Question>) {
         questions = questionList
         notifyDataSetChanged()

@@ -2,11 +2,13 @@ package com.example.surveyapp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.surveyapp.models.Answer
 import com.example.surveyapp.models.Survey
 import com.example.surveyapp.models.Question
-import com.example.surveyapp.models.Answer
 import com.example.surveyapp.repositories.SurveyRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * ViewModel for survey-related UI components.
@@ -22,7 +24,9 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
      */
     fun insertSurvey(survey: Survey) {
         viewModelScope.launch {
-            repository.insertSurvey(survey)
+            withContext(Dispatchers.IO) {
+                repository.insertSurvey(survey)
+            }
         }
     }
 
@@ -33,7 +37,9 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
      */
     fun updateSurvey(survey: Survey) {
         viewModelScope.launch {
-            repository.updateSurvey(survey)
+            withContext(Dispatchers.IO) {
+                repository.updateSurvey(survey)
+            }
         }
     }
 
@@ -42,9 +48,11 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
      *
      * @param survey The survey to delete.
      */
-    fun deleteSurvey(survey: Survey) {
+    fun deleteSurvey(surveyId: Int) {
         viewModelScope.launch {
-            repository.deleteSurvey(survey)
+            withContext(Dispatchers.IO) {
+                repository.deleteSurvey(surveyId)
+            }
         }
     }
 
@@ -55,7 +63,9 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
      */
     fun getAllSurveys(callback: (List<Survey>) -> Unit) {
         viewModelScope.launch {
-            val surveys = repository.getAllSurveys()
+            val surveys = withContext(Dispatchers.IO) {
+                repository.getAllSurveys()
+            }
             callback(surveys)
         }
     }
@@ -67,7 +77,9 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
      */
     fun insertQuestion(question: Question) {
         viewModelScope.launch {
-            repository.insertQuestion(question)
+            withContext(Dispatchers.IO) {
+                repository.insertQuestion(question)
+            }
         }
     }
 
@@ -78,7 +90,9 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
      */
     fun updateQuestion(question: Question) {
         viewModelScope.launch {
-            repository.updateQuestion(question)
+            withContext(Dispatchers.IO) {
+                repository.updateQuestion(question)
+            }
         }
     }
 
@@ -89,7 +103,9 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
      */
     fun deleteQuestion(question: Question) {
         viewModelScope.launch {
-            repository.deleteQuestion(question)
+            withContext(Dispatchers.IO) {
+                repository.deleteQuestion(question)
+            }
         }
     }
 
@@ -101,32 +117,10 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
      */
     fun getQuestionsForSurvey(surveyId: Int, callback: (List<Question>) -> Unit) {
         viewModelScope.launch {
-            val questions = repository.getQuestionsForSurvey(surveyId)
+            val questions = withContext(Dispatchers.IO) {
+                repository.getQuestionsForSurvey(surveyId)
+            }
             callback(questions)
-        }
-    }
-
-    /**
-     * Inserts a new answer.
-     *
-     * @param answer The answer to insert.
-     */
-    fun insertAnswer(answer: Answer) {
-        viewModelScope.launch {
-            repository.insertAnswer(answer)
-        }
-    }
-
-    /**
-     * Fetches all answers for a specific question.
-     *
-     * @param questionId The ID of the question.
-     * @param callback The callback to invoke with the list of answers.
-     */
-    fun getAnswersForQuestion(questionId: Int, callback: (List<Answer>) -> Unit) {
-        viewModelScope.launch {
-            val answers = repository.getAnswersForQuestion(questionId)
-            callback(answers)
         }
     }
 
@@ -138,9 +132,38 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
      */
     fun getSurveyById(surveyId: Int, callback: (Survey?) -> Unit) {
         viewModelScope.launch {
-            val survey = repository.getSurveyById(surveyId)
+            val survey = withContext(Dispatchers.IO) {
+                repository.getSurveyById(surveyId)
+            }
             callback(survey)
         }
     }
 
+    /**
+     * Inserts a new answer.
+     *
+     * @param answer The answer to insert.
+     */
+    fun insertAnswer(answer: Answer) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                repository.insertAnswer(answer)
+            }
+        }
+    }
+
+    /**
+     * Fetches all answers for a specific question.
+     *
+     * @param questionId The ID of the question.
+     * @param callback The callback to invoke with the list of answers.
+     */
+    fun getAnswersForQuestion(questionId: Int, callback: (List<Answer>) -> Unit) {
+        viewModelScope.launch {
+            val answers = withContext(Dispatchers.IO) {
+                repository.getAnswersForQuestion(questionId)
+            }
+            callback(answers)
+        }
+    }
 }

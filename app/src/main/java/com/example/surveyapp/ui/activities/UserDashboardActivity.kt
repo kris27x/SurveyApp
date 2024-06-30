@@ -11,9 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
-import com.example.surveyapp.database.SurveyDatabase
 import com.example.surveyapp.models.Survey
-import com.example.surveyapp.repositories.SurveyRepository
 import com.example.surveyapp.viewmodels.SurveyViewModel
 import com.example.surveyapp.viewmodels.SurveyViewModelFactory
 
@@ -25,8 +23,7 @@ class UserDashboardActivity : AppCompatActivity() {
     private lateinit var surveyRecyclerView: RecyclerView
     private lateinit var surveyAdapter: SurveyAdapter
     private val surveyViewModel: SurveyViewModel by viewModels {
-        val surveyDao = SurveyDatabase.getDatabase(application).surveyDao()
-        SurveyViewModelFactory(SurveyRepository(surveyDao))
+        SurveyViewModelFactory(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +57,11 @@ class UserDashboardActivity : AppCompatActivity() {
     }
 }
 
-// Adapter for displaying the list of surveys
+/**
+ * Adapter for displaying the list of surveys.
+ *
+ * @property onSurveyClick Callback to handle survey item click events.
+ */
 class SurveyAdapter(private val onSurveyClick: (Survey) -> Unit) :
     RecyclerView.Adapter<SurveyAdapter.SurveyViewHolder>() {
 
@@ -79,15 +80,31 @@ class SurveyAdapter(private val onSurveyClick: (Survey) -> Unit) :
 
     override fun getItemCount(): Int = surveys.size
 
+    /**
+     * Submits a new list of surveys to the adapter.
+     *
+     * @param surveyList The new list of surveys.
+     */
     fun submitList(surveyList: List<Survey>) {
         surveys = surveyList
         notifyDataSetChanged()
     }
 
+    /**
+     * ViewHolder class for displaying survey items.
+     *
+     * @property itemView The view of the survey item.
+     */
     class SurveyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val surveyTitle: TextView = itemView.findViewById(R.id.textViewSurveyTitle)
         private val surveyDescription: TextView = itemView.findViewById(R.id.textViewSurveyDescription)
 
+        /**
+         * Binds the survey data to the views.
+         *
+         * @param survey The survey data to bind.
+         * @param onSurveyClick Callback to handle survey item click events.
+         */
         fun bind(survey: Survey, onSurveyClick: (Survey) -> Unit) {
             surveyTitle.text = survey.title
             surveyDescription.text = survey.description

@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.surveyapp.models.User
 import com.example.surveyapp.repositories.UserRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * ViewModel for user-related UI components.
@@ -20,7 +22,9 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
      */
     fun insert(user: User) {
         viewModelScope.launch {
-            repository.insert(user)
+            withContext(Dispatchers.IO) {
+                repository.insert(user)
+            }
         }
     }
 
@@ -33,7 +37,9 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
      */
     fun getUser(username: String, password: String, callback: (User?) -> Unit) {
         viewModelScope.launch {
-            val user = repository.getUser(username, password)
+            val user = withContext(Dispatchers.IO) {
+                repository.getUser(username, password)
+            }
             callback(user)
         }
     }
@@ -45,7 +51,9 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
      */
     fun updateUser(user: User) {
         viewModelScope.launch {
-            repository.updateUser(user)
+            withContext(Dispatchers.IO) {
+                repository.updateUser(user)
+            }
         }
     }
 
@@ -56,7 +64,9 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
      */
     fun deleteUser(user: User) {
         viewModelScope.launch {
-            repository.deleteUser(user)
+            withContext(Dispatchers.IO) {
+                repository.deleteUser(user)
+            }
         }
     }
 
@@ -67,7 +77,9 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
      */
     fun getAdminUsers(callback: (List<User>) -> Unit) {
         viewModelScope.launch {
-            val adminUsers = repository.getAdminUsers()
+            val adminUsers = withContext(Dispatchers.IO) {
+                repository.getAdminUsers()
+            }
             callback(adminUsers)
         }
     }
@@ -79,7 +91,9 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
      */
     fun getAllUsers(callback: (List<User>) -> Unit) {
         viewModelScope.launch {
-            val users = repository.getAllUsers()
+            val users = withContext(Dispatchers.IO) {
+                repository.getAllUsers()
+            }
             callback(users)
         }
     }
