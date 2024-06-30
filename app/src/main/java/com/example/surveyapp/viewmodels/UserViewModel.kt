@@ -61,6 +61,18 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     }
 
     /**
+     * Fetches all admin users.
+     *
+     * @param callback The callback to invoke with the list of admin users.
+     */
+    fun getAdminUsers(callback: (List<User>) -> Unit) {
+        viewModelScope.launch {
+            val adminUsers = repository.getAdminUsers()
+            callback(adminUsers)
+        }
+    }
+
+    /**
      * Fetches all users.
      *
      * @param callback The callback to invoke with the list of users.

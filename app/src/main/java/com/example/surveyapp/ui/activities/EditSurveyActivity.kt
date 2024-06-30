@@ -6,10 +6,14 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
 import com.example.surveyapp.database.SurveyDatabase
+import com.example.surveyapp.models.Question
 import com.example.surveyapp.models.Survey
 import com.example.surveyapp.repositories.SurveyRepository
+import com.example.surveyapp.ui.adapters.QuestionAdapter
 import com.example.surveyapp.viewmodels.SurveyViewModel
 import com.example.surveyapp.viewmodels.SurveyViewModelFactory
 
@@ -25,6 +29,9 @@ class EditSurveyActivity : AppCompatActivity() {
     private lateinit var surveyTitleEditText: EditText
     private lateinit var surveyDescriptionEditText: EditText
     private lateinit var updateSurveyButton: Button
+    private lateinit var addQuestionButton: Button
+    private lateinit var questionRecyclerView: RecyclerView
+    private lateinit var questionAdapter: QuestionAdapter
     private val surveyViewModel: SurveyViewModel by viewModels {
         val surveyDao = SurveyDatabase.getDatabase(application).surveyDao()
         SurveyViewModelFactory(SurveyRepository(surveyDao))
@@ -40,6 +47,16 @@ class EditSurveyActivity : AppCompatActivity() {
         surveyTitleEditText = findViewById(R.id.editTextSurveyTitle)
         surveyDescriptionEditText = findViewById(R.id.editTextSurveyDescription)
         updateSurveyButton = findViewById(R.id.buttonUpdateSurvey)
+        addQuestionButton = findViewById(R.id.buttonAddQuestion)
+        questionRecyclerView = findViewById(R.id.recyclerViewQuestions)
+
+        // Setup RecyclerView
+        questionRecyclerView.layoutManager = LinearLayoutManager(this)
+        questionAdapter = QuestionAdapter(
+            { question -> onUpdateQuestion(question) },
+            { question -> onDeleteQuestion(question) }
+        )
+        questionRecyclerView.adapter = questionAdapter
 
         // Retrieve the survey ID from the intent
         surveyId = intent.getIntExtra(EXTRA_SURVEY_ID, 0)
@@ -52,6 +69,11 @@ class EditSurveyActivity : AppCompatActivity() {
                     Toast.makeText(this, "Survey not found", Toast.LENGTH_SHORT).show()
                     finish()
                 }
+            }
+
+            // Fetch questions for the survey
+            surveyViewModel.getQuestionsForSurvey(surveyId) { questions ->
+                questionAdapter.submitList(questions)
             }
         } else {
             Toast.makeText(this, "Invalid survey ID", Toast.LENGTH_SHORT).show()
@@ -71,6 +93,41 @@ class EditSurveyActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Please enter both title and description", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        // Set click listener for adding a new question
+        addQuestionButton.setOnClickListener {
+            val newQuestion = Question(surveyId = surveyId, text = "New Question")
+            surveyViewModel.insertQuestion(newQuestion)
+            Toast.makeText(this, "Question Added", Toast.LENGTH_SHORT).show()
+            // Refresh the questions list
+            surveyViewModel.getQuestionsForSurvey(surveyId) { questions ->
+                questionAdapter.submitList(questions)
+            }
+        }
+    }
+
+    /**
+     * Handles updating a question.
+     *
+     * @param question The question to update.
+     */
+    private fun onUpdateQuestion(question: Question) {
+        surveyViewModel.updateQuestion(question)
+        Toast.makeText(this, "Question Updated", Toast.LENGTH_SHORT).show()
+    }
+
+    /**
+     * Handles deleting a question.
+     *
+     * @param question The question to delete.
+     */
+    private fun onDeleteQuestion(question: Question) {
+        surveyViewModel.deleteQuestion(question)
+        Toast.makeText(this, "Question Deleted", Toast.LENGTH_SHORT).show()
+        // Refresh the questions list
+        surveyViewModel.getQuestionsForSurvey(surveyId) { questions ->
+            questionAdapter.submitList(questions)
         }
     }
 }

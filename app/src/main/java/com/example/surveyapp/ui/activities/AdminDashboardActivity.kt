@@ -3,6 +3,7 @@ package com.example.surveyapp.ui.activities
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,7 +39,10 @@ class AdminDashboardActivity : AppCompatActivity() {
 
         // Setup RecyclerView
         surveyRecyclerView.layoutManager = LinearLayoutManager(this)
-        surveyAdapter = SurveyAdapter { survey -> onSurveySelected(survey) }
+        surveyAdapter = SurveyAdapter(
+            { survey -> onSurveySelected(survey) },
+            { survey -> onDeleteSurvey(survey) }
+        )
         surveyRecyclerView.adapter = surveyAdapter
 
         // Observe the list of surveys
@@ -63,5 +67,15 @@ class AdminDashboardActivity : AppCompatActivity() {
             putExtra(EditSurveyActivity.EXTRA_SURVEY_ID, survey.id)
         }
         startActivity(intent)
+    }
+
+    /**
+     * Handles deletion of a survey.
+     *
+     * @param survey The survey to delete.
+     */
+    private fun onDeleteSurvey(survey: Survey) {
+        surveyViewModel.deleteSurvey(survey)
+        Toast.makeText(this, "Survey deleted", Toast.LENGTH_SHORT).show()
     }
 }

@@ -142,4 +142,5 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
             callback(survey)
         }
     }
+
 }
