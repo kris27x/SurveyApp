@@ -55,6 +55,8 @@ class LoginActivity : AppCompatActivity() {
                         } else {
                             Intent(this, UserDashboardActivity::class.java)
                         }
+                        intent.putExtra("USER_ID", user.id)
+                        intent.putExtra("IS_ADMIN", user.isAdmin)
                         startActivity(intent)
                         finish() // Close the login activity
                     } else {

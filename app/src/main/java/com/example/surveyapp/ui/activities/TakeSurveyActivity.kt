@@ -14,9 +14,9 @@ import com.example.surveyapp.R
 import com.example.surveyapp.database.SurveyDatabaseHelper
 import com.example.surveyapp.models.Answer
 import com.example.surveyapp.models.Question
+import com.example.surveyapp.utils.LikertScale
 import com.example.surveyapp.viewmodels.SurveyViewModel
 import com.example.surveyapp.viewmodels.SurveyViewModelFactory
-import com.example.surveyapp.utils.LikertScale
 
 /**
  * Activity for taking a survey.
@@ -25,6 +25,8 @@ class TakeSurveyActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_SURVEY_ID = "com.example.surveyapp.ui.activities.SURVEY_ID"
+        const val EXTRA_USER_ID = "com.example.surveyapp.ui.activities.USER_ID"
+        const val EXTRA_IS_ADMIN = "com.example.surveyapp.ui.activities.IS_ADMIN"
     }
 
     private lateinit var surveyDatabaseHelper: SurveyDatabaseHelper
@@ -33,6 +35,8 @@ class TakeSurveyActivity : AppCompatActivity() {
     }
 
     private var surveyId: Int = 0
+    private var userId: Int = 0
+    private var isAdmin: Boolean = false
     private lateinit var questionTextView: TextView
     private lateinit var optionsRadioGroup: RadioGroup
     private lateinit var submitButton: Button
@@ -44,10 +48,16 @@ class TakeSurveyActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_take_survey)
 
+        // Retrieve the survey ID, user ID, and admin status from the intent
+        surveyId = intent.getIntExtra(EXTRA_SURVEY_ID, 0)
+        userId = intent.getIntExtra(EXTRA_USER_ID, 0)
+        isAdmin = intent.getBooleanExtra(EXTRA_IS_ADMIN, false)
+
         // Initialize the toolbar
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Take Survey"
 
         // Initialize the database helper
         surveyDatabaseHelper = SurveyDatabaseHelper(this)
@@ -56,9 +66,6 @@ class TakeSurveyActivity : AppCompatActivity() {
         questionTextView = findViewById(R.id.textViewQuestion)
         optionsRadioGroup = findViewById(R.id.radioGroupOptions)
         submitButton = findViewById(R.id.buttonSubmit)
-
-        // Retrieve the survey ID from the intent
-        surveyId = intent.getIntExtra(EXTRA_SURVEY_ID, 0)
 
         if (surveyId != 0) {
             surveyViewModel.getQuestionsForSurvey(surveyId) { fetchedQuestions ->
@@ -149,7 +156,7 @@ class TakeSurveyActivity : AppCompatActivity() {
 
             val answer = Answer(
                 questionId = questionId,
-                userId = 0, // This should be the logged-in user ID
+                userId = userId, // Pass the logged-in user ID
                 answerValue = answerValue
             )
 

@@ -23,15 +23,26 @@ import com.example.surveyapp.viewmodels.SurveyViewModelFactory
  */
 class UserDashboardActivity : AppCompatActivity() {
 
+    companion object {
+        const val EXTRA_USER_ID = "com.example.surveyapp.ui.activities.USER_ID"
+        const val EXTRA_IS_ADMIN = "com.example.surveyapp.ui.activities.IS_ADMIN"
+    }
+
     private lateinit var surveyRecyclerView: RecyclerView
     private lateinit var surveyAdapter: SurveyAdapter
     private val surveyViewModel: SurveyViewModel by viewModels {
         SurveyViewModelFactory(this)
     }
+    private var userId: Int = 0
+    private var isAdmin: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_dashboard)
+
+        // Retrieve user ID and admin status from intent extras
+        userId = intent.getIntExtra(EXTRA_USER_ID, 0)
+        isAdmin = intent.getBooleanExtra(EXTRA_IS_ADMIN, false)
 
         // Setup toolbar
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -68,6 +79,8 @@ class UserDashboardActivity : AppCompatActivity() {
     private fun onSurveySelected(survey: Survey) {
         val intent = Intent(this, TakeSurveyActivity::class.java).apply {
             putExtra(TakeSurveyActivity.EXTRA_SURVEY_ID, survey.id)
+            putExtra(TakeSurveyActivity.EXTRA_USER_ID, userId)
+            putExtra(TakeSurveyActivity.EXTRA_IS_ADMIN, isAdmin)
         }
         startActivity(intent)
     }

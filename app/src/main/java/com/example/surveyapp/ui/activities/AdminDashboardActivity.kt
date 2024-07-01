@@ -19,16 +19,27 @@ import com.example.surveyapp.viewmodels.SurveyViewModelFactory
  */
 class AdminDashboardActivity : AppCompatActivity() {
 
+    companion object {
+        const val EXTRA_USER_ID = "com.example.surveyapp.ui.activities.USER_ID"
+        const val EXTRA_IS_ADMIN = "com.example.surveyapp.ui.activities.IS_ADMIN"
+    }
+
     private lateinit var surveyRecyclerView: RecyclerView
     private lateinit var surveyAdapter: SurveyAdapter
     private lateinit var addSurveyButton: Button
     private val surveyViewModel: SurveyViewModel by viewModels {
         SurveyViewModelFactory(this)
     }
+    private var userId: Int = 0
+    private var isAdmin: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin_dashboard)
+
+        // Retrieve user ID and admin status from intent extras
+        userId = intent.getIntExtra(EXTRA_USER_ID, 0)
+        isAdmin = intent.getBooleanExtra(EXTRA_IS_ADMIN, false)
 
         // Initialize UI components
         surveyRecyclerView = findViewById(R.id.recyclerViewSurveys)
@@ -49,7 +60,10 @@ class AdminDashboardActivity : AppCompatActivity() {
 
         // Set click listener for adding a new survey
         addSurveyButton.setOnClickListener {
-            val intent = Intent(this, CreateSurveyActivity::class.java)
+            val intent = Intent(this, CreateSurveyActivity::class.java).apply {
+                putExtra(CreateSurveyActivity.EXTRA_USER_ID, userId)
+                putExtra(CreateSurveyActivity.EXTRA_IS_ADMIN, isAdmin)
+            }
             startActivity(intent)
         }
 
@@ -70,6 +84,8 @@ class AdminDashboardActivity : AppCompatActivity() {
     private fun onSurveySelected(survey: Survey) {
         val intent = Intent(this, EditSurveyActivity::class.java).apply {
             putExtra(EditSurveyActivity.EXTRA_SURVEY_ID, survey.id)
+            putExtra(EditSurveyActivity.EXTRA_USER_ID, userId)
+            putExtra(EditSurveyActivity.EXTRA_IS_ADMIN, isAdmin)
         }
         startActivity(intent)
     }

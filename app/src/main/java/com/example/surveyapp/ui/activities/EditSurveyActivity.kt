@@ -1,6 +1,7 @@
 package com.example.surveyapp.ui.activities
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -22,6 +23,8 @@ class EditSurveyActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_SURVEY_ID = "com.example.surveyapp.ui.activities.SURVEY_ID"
+        const val EXTRA_USER_ID = "com.example.surveyapp.ui.activities.USER_ID"
+        const val EXTRA_IS_ADMIN = "com.example.surveyapp.ui.activities.IS_ADMIN"
     }
 
     private lateinit var surveyTitleEditText: EditText
@@ -35,10 +38,17 @@ class EditSurveyActivity : AppCompatActivity() {
     }
 
     private var surveyId: Int = 0
+    private var userId: Int = 0
+    private var isAdmin: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_survey)
+
+        // Retrieve the survey ID, user ID, and admin status from the intent
+        surveyId = intent.getIntExtra(EXTRA_SURVEY_ID, 0)
+        userId = intent.getIntExtra(EXTRA_USER_ID, 0)
+        isAdmin = intent.getBooleanExtra(EXTRA_IS_ADMIN, false)
 
         // Initialize UI components
         surveyTitleEditText = findViewById(R.id.editTextSurveyTitle)
@@ -55,8 +65,7 @@ class EditSurveyActivity : AppCompatActivity() {
         )
         questionRecyclerView.adapter = questionAdapter
 
-        // Retrieve the survey ID from the intent
-        surveyId = intent.getIntExtra(EXTRA_SURVEY_ID, 0)
+        // Fetch survey data
         if (surveyId != 0) {
             surveyViewModel.getSurveyById(surveyId) { survey ->
                 if (survey != null) {

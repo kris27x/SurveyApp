@@ -10,16 +10,17 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:theme="?attr/actionBarTheme"
         android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:elevation="4dp" />
+        android:elevation="4dp"
+        android:titleTextColor="@android:color/white"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:layout_below="@id/toolbar">
 
         <EditText
             android:id="@+id/editTextSurveyTitle"
@@ -27,10 +28,9 @@
             android:layout_height="wrap_content"
             android:hint="Survey Title"
             android:inputType="text"
-            android:padding="10dp"
-            android:background="@drawable/edit_text_background"
+            android:padding="12dp"
             android:layout_marginBottom="16dp"
-            android:textSize="16sp" />
+            android:background="@drawable/edit_text_background"/>
 
         <EditText
             android:id="@+id/editTextSurveyDescription"
@@ -38,10 +38,9 @@
             android:layout_height="wrap_content"
             android:hint="Survey Description"
             android:inputType="text"
-            android:padding="10dp"
-            android:background="@drawable/edit_text_background"
+            android:padding="12dp"
             android:layout_marginBottom="16dp"
-            android:textSize="16sp" />
+            android:background="@drawable/edit_text_background"/>
 
         <Button
             android:id="@+id/buttonUpdateSurvey"
@@ -51,7 +50,7 @@
             android:background="@color/colorPrimary"
             android:textColor="@android:color/white"
             android:padding="12dp"
-            android:textSize="16sp" />
+            android:layout_marginBottom="16dp"/>
 
         <Button
             android:id="@+id/buttonAddQuestion"
@@ -61,13 +60,11 @@
             android:background="@color/colorPrimary"
             android:textColor="@android:color/white"
             android:padding="12dp"
-            android:textSize="16sp"
-            android:layout_marginTop="16dp" />
+            android:layout_marginBottom="16dp"/>
 
-        <RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewQuestions"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="16dp"/>
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 </RelativeLayout>

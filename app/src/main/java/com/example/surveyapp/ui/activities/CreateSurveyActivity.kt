@@ -6,6 +6,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.example.surveyapp.R
 import com.example.surveyapp.models.Survey
 import com.example.surveyapp.viewmodels.SurveyViewModel
@@ -16,16 +17,33 @@ import com.example.surveyapp.viewmodels.SurveyViewModelFactory
  */
 class CreateSurveyActivity : AppCompatActivity() {
 
+    companion object {
+        const val EXTRA_USER_ID = "com.example.surveyapp.ui.activities.USER_ID"
+        const val EXTRA_IS_ADMIN = "com.example.surveyapp.ui.activities.IS_ADMIN"
+    }
+
     private lateinit var surveyTitleEditText: EditText
     private lateinit var surveyDescriptionEditText: EditText
     private lateinit var createSurveyButton: Button
     private val surveyViewModel: SurveyViewModel by viewModels {
         SurveyViewModelFactory(this)
     }
+    private var userId: Int = 0
+    private var isAdmin: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_survey)
+
+        // Retrieve user ID and admin status from intent extras
+        userId = intent.getIntExtra(EXTRA_USER_ID, 0)
+        isAdmin = intent.getBooleanExtra(EXTRA_IS_ADMIN, false)
+
+        // Setup toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Create Survey"
 
         // Initialize UI components
         surveyTitleEditText = findViewById(R.id.editTextSurveyTitle)
@@ -46,9 +64,6 @@ class CreateSurveyActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please enter both title and description", Toast.LENGTH_SHORT).show()
             }
         }
-
-        // Set up the back button in the toolbar
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onSupportNavigateUp(): Boolean {
