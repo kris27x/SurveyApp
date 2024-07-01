@@ -86,15 +86,17 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
     }
 
     /**
-     * Inserts a new question.
+     * Inserts a new question and returns the question ID through a callback.
      *
      * @param question The question to insert.
+     * @param callback The callback to invoke with the inserted question ID.
      */
-    fun insertQuestion(question: Question) {
+    fun insertQuestion(question: Question, callback: (Long?) -> Unit) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
+            val questionId = withContext(Dispatchers.IO) {
                 repository.insertQuestion(question)
             }
+            callback(questionId)
         }
     }
 

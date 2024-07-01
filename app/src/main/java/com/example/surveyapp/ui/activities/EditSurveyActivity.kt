@@ -1,12 +1,12 @@
 package com.example.surveyapp.ui.activities
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
@@ -40,7 +40,6 @@ class EditSurveyActivity : AppCompatActivity() {
     private var surveyId: Int = 0
     private var userId: Int = 0
     private var isAdmin: Boolean = false
-    private val questions = mutableListOf<Question>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,12 +49,6 @@ class EditSurveyActivity : AppCompatActivity() {
         surveyId = intent.getIntExtra(EXTRA_SURVEY_ID, 0)
         userId = intent.getIntExtra(EXTRA_USER_ID, 0)
         isAdmin = intent.getBooleanExtra(EXTRA_IS_ADMIN, false)
-
-        // Setup toolbar
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Edit Survey"
 
         // Initialize UI components
         surveyTitleEditText = findViewById(R.id.editTextSurveyTitle)
@@ -85,9 +78,8 @@ class EditSurveyActivity : AppCompatActivity() {
             }
 
             // Fetch questions for the survey
-            surveyViewModel.getQuestionsForSurvey(surveyId) { fetchedQuestions ->
-                questions.addAll(fetchedQuestions)
-                questionAdapter.submitList(questions.toList())
+            surveyViewModel.getQuestionsForSurvey(surveyId) { questions ->
+                questionAdapter.submitList(questions)
             }
         } else {
             Toast.makeText(this, "Invalid survey ID", Toast.LENGTH_SHORT).show()
@@ -112,10 +104,21 @@ class EditSurveyActivity : AppCompatActivity() {
         // Set click listener for adding a new question
         addQuestionButton.setOnClickListener {
             val newQuestion = Question(surveyId = surveyId, text = "New Question")
-            questions.add(newQuestion)
-            questionAdapter.submitList(questions.toList())
-            surveyViewModel.insertQuestion(newQuestion)
+            surveyViewModel.insertQuestion(newQuestion) {
+                if (it != null) {
+                    Toast.makeText(this, "Question Added", Toast.LENGTH_SHORT).show()
+                    // Refresh the questions list
+                    surveyViewModel.getQuestionsForSurvey(surveyId) { questions ->
+                        questionAdapter.submitList(questions)
+                    }
+                } else {
+                    Toast.makeText(this, "Error adding question", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
+
+        // Set up the back button in the toolbar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -128,12 +131,12 @@ class EditSurveyActivity : AppCompatActivity() {
      *
      * @param question The question to update.
      */
-    private fun onUpdateQuestion(updatedQuestion: Question) {
-        val index = questions.indexOfFirst { it.id == updatedQuestion.id }
-        if (index != -1) {
-            questions[index] = updatedQuestion
-            questionAdapter.submitList(questions.toList())
-            surveyViewModel.updateQuestion(updatedQuestion)
+    private fun onUpdateQuestion(question: Question) {
+        surveyViewModel.updateQuestion(question)
+        Toast.makeText(this, "Question Updated", Toast.LENGTH_SHORT).show()
+        // Refresh the questions list
+        surveyViewModel.getQuestionsForSurvey(surveyId) { questions ->
+            questionAdapter.submitList(questions)
         }
     }
 
@@ -143,8 +146,11 @@ class EditSurveyActivity : AppCompatActivity() {
      * @param question The question to delete.
      */
     private fun onDeleteQuestion(question: Question) {
-        questions.remove(question)
-        questionAdapter.submitList(questions.toList())
         surveyViewModel.deleteQuestion(question)
+        Toast.makeText(this, "Question Deleted", Toast.LENGTH_SHORT).show()
+        // Refresh the questions list
+        surveyViewModel.getQuestionsForSurvey(surveyId) { questions ->
+            questionAdapter.submitList(questions)
+        }
     }
 }
