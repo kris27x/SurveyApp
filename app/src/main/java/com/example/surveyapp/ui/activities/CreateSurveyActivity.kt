@@ -15,6 +15,7 @@ import com.example.surveyapp.models.Survey
 import com.example.surveyapp.ui.adapters.QuestionAdapter
 import com.example.surveyapp.viewmodels.SurveyViewModel
 import com.example.surveyapp.viewmodels.SurveyViewModelFactory
+import java.util.UUID
 
 /**
  * Activity for creating a new survey.
@@ -70,7 +71,7 @@ class CreateSurveyActivity : AppCompatActivity() {
 
         // Set click listener for adding a new question
         addQuestionButton.setOnClickListener {
-            val newQuestion = Question(surveyId = 0, text = "New Question")
+            val newQuestion = Question(id = generateTemporaryId(), surveyId = 0, text = "New Question")
             questions.add(newQuestion)
             questionAdapter.submitList(questions.toList())
         }
@@ -109,6 +110,10 @@ class CreateSurveyActivity : AppCompatActivity() {
     private fun onDeleteQuestion(question: Question) {
         questions.remove(question)
         questionAdapter.submitList(questions.toList())
+    }
+
+    private fun generateTemporaryId(): Int {
+        return UUID.randomUUID().hashCode()
     }
 
     override fun onSupportNavigateUp(): Boolean {
