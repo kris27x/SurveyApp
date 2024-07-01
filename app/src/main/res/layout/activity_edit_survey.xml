@@ -15,56 +15,58 @@
         android:elevation="4dp"
         android:titleTextColor="@android:color/white"/>
 
-    <LinearLayout
+    <EditText
+        android:id="@+id/editTextSurveyTitle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:layout_below="@id/toolbar">
+        android:layout_height="wrap_content"
+        android:hint="Survey Title"
+        android:layout_below="@id/toolbar"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
 
-        <EditText
-            android:id="@+id/editTextSurveyTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Survey Title"
-            android:inputType="text"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/edit_text_background"/>
+    <EditText
+        android:id="@+id/editTextSurveyDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Survey Description"
+        android:layout_below="@id/editTextSurveyTitle"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
 
-        <EditText
-            android:id="@+id/editTextSurveyDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Survey Description"
-            android:inputType="text"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/edit_text_background"/>
+    <Button
+        android:id="@+id/buttonUpdateSurvey"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Update Survey"
+        android:background="@color/colorPrimary"
+        android:textColor="@android:color/white"
+        android:layout_below="@id/editTextSurveyDescription"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
 
-        <Button
-            android:id="@+id/buttonUpdateSurvey"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Update Survey"
-            android:background="@color/colorPrimary"
-            android:textColor="@android:color/white"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp"/>
+    <Button
+        android:id="@+id/buttonAddQuestion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Question"
+        android:background="@color/colorPrimary"
+        android:textColor="@android:color/white"
+        android:layout_below="@id/buttonUpdateSurvey"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
 
-        <Button
-            android:id="@+id/buttonAddQuestion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Add Question"
-            android:background="@color/colorPrimary"
-            android:textColor="@android:color/white"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewQuestions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewQuestions"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/buttonAddQuestion"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_weight="1"/>
 </RelativeLayout>

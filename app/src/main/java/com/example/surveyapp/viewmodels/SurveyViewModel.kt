@@ -86,6 +86,19 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
     }
 
     /**
+     * Inserts a new question.
+     *
+     * @param question The question to insert.
+     */
+    fun insertQuestion(question: Question) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                repository.insertQuestion(question)
+            }
+        }
+    }
+
+    /**
      * Updates an existing question.
      *
      * @param question The question to update.
