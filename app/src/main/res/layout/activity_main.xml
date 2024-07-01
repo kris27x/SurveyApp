@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".ui.activities.LoginActivity">
+    tools:context=".MainActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/tool_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimary"
@@ -15,60 +15,37 @@
         android:elevation="4dp"/>
 
     <TextView
-        android:id="@+id/textViewLogin"
+        android:id="@+id/textViewWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login"
+        android:text="Welcome to Survey App"
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="80dp"
         android:textColor="@color/black"/>
 
-    <EditText
-        android:id="@+id/username"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Username"
-        android:layout_below="@id/textViewLogin"
-        android:layout_marginTop="30dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"/>
-
-    <EditText
-        android:id="@+id/password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:layout_below="@id/username"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"/>
-
     <Button
-        android:id="@+id/loginButton"
-        android:layout_width="match_parent"
+        android:id="@+id/buttonLogin"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Login"
         android:textSize="18sp"
-        android:layout_below="@id/password"
+        android:layout_below="@id/textViewWelcome"
         android:layout_marginTop="30dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_centerHorizontal="true"
         android:backgroundTint="@color/colorPrimary"
         android:textColor="@color/white"/>
 
     <Button
-        android:id="@+id/registerButton"
-        android:layout_width="match_parent"
+        android:id="@+id/buttonRegister"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Register"
         android:textSize="18sp"
-        android:layout_below="@id/loginButton"
+        android:layout_below="@id/buttonLogin"
         android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_centerHorizontal="true"
         android:backgroundTint="@color/colorPrimary"
         android:textColor="@color/white"/>
 </RelativeLayout>

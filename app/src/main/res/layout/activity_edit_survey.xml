@@ -1,46 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    tools:context=".ui.activities.EditSurveyActivity">
 
-    <EditText
-        android:id="@+id/editTextSurveyTitle"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:elevation="4dp" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Survey Title"
-        android:textSize="18sp"
-        android:padding="8dp" />
+        android:layout_below="@id/toolbar"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <EditText
-        android:id="@+id/editTextSurveyDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Survey Description"
-        android:textSize="18sp"
-        android:padding="8dp"
-        android:layout_marginTop="8dp" />
+        <EditText
+            android:id="@+id/editTextSurveyTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Survey Title"
+            android:inputType="text"
+            android:padding="10dp"
+            android:background="@drawable/edit_text_background"
+            android:layout_marginBottom="16dp"
+            android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/buttonUpdateSurvey"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Update Survey"
-        android:layout_marginTop="16dp"
-        android:layout_gravity="center" />
+        <EditText
+            android:id="@+id/editTextSurveyDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Survey Description"
+            android:inputType="text"
+            android:padding="10dp"
+            android:background="@drawable/edit_text_background"
+            android:layout_marginBottom="16dp"
+            android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/buttonAddQuestion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add Question"
-        android:layout_marginTop="16dp"
-        android:layout_gravity="center" />
+        <Button
+            android:id="@+id/buttonUpdateSurvey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Update Survey"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"
+            android:padding="12dp"
+            android:textSize="16sp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewQuestions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"/>
-</LinearLayout>
+        <Button
+            android:id="@+id/buttonAddQuestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Question"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp" />
+
+        <RecyclerView
+            android:id="@+id/recyclerViewQuestions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp"/>
+    </LinearLayout>
+</RelativeLayout>

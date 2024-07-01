@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
-import com.example.surveyapp.database.SurveyDatabaseHelper
 import com.example.surveyapp.models.Survey
 import com.example.surveyapp.ui.adapters.SurveyAdapter
 import com.example.surveyapp.viewmodels.SurveyViewModel
@@ -23,7 +22,6 @@ class AdminDashboardActivity : AppCompatActivity() {
     private lateinit var surveyRecyclerView: RecyclerView
     private lateinit var surveyAdapter: SurveyAdapter
     private lateinit var addSurveyButton: Button
-    private lateinit var surveyDatabaseHelper: SurveyDatabaseHelper
     private val surveyViewModel: SurveyViewModel by viewModels {
         SurveyViewModelFactory(this)
     }
@@ -31,9 +29,6 @@ class AdminDashboardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin_dashboard)
-
-        // Initialize the database helper
-        surveyDatabaseHelper = SurveyDatabaseHelper(this)
 
         // Initialize UI components
         surveyRecyclerView = findViewById(R.id.recyclerViewSurveys)
@@ -57,6 +52,14 @@ class AdminDashboardActivity : AppCompatActivity() {
             val intent = Intent(this, CreateSurveyActivity::class.java)
             startActivity(intent)
         }
+
+        // Set up the back button in the toolbar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     /**
@@ -79,5 +82,8 @@ class AdminDashboardActivity : AppCompatActivity() {
     private fun onDeleteSurvey(survey: Survey) {
         surveyViewModel.deleteSurvey(survey.id)
         Toast.makeText(this, "Survey deleted", Toast.LENGTH_SHORT).show()
+        surveyViewModel.getAllSurveys { surveys ->
+            surveyAdapter.submitList(surveys)
+        }
     }
 }

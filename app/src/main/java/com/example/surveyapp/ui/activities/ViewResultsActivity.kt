@@ -1,12 +1,14 @@
 package com.example.surveyapp.ui.activities
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
@@ -35,6 +37,11 @@ class ViewResultsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_results)
 
+        // Initialize the toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         // Initialize UI components
         resultsRecyclerView = findViewById(R.id.recyclerViewResults)
         resultsRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -56,12 +63,20 @@ class ViewResultsActivity : AppCompatActivity() {
             finish() // Close activity if survey ID is invalid
         }
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 }
 
 /**
  * Adapter for displaying survey results.
- *
- * @property onSurveyClick Callback to handle survey item click events.
  */
 class ResultsAdapter : RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder>() {
 
@@ -104,8 +119,6 @@ class ResultsAdapter : RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder>() 
 
     /**
      * ViewHolder class for displaying survey results.
-     *
-     * @property itemView The view of the result item.
      */
     class ResultsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val questionTextView: TextView = itemView.findViewById(R.id.textViewQuestion)

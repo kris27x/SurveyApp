@@ -7,9 +7,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.example.surveyapp.R
-import com.example.surveyapp.database.SurveyDatabaseHelper
-import com.example.surveyapp.repositories.UserRepository
 import com.example.surveyapp.viewmodels.UserViewModel
 import com.example.surveyapp.viewmodels.UserViewModelFactory
 
@@ -21,7 +20,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var usernameEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
-    private lateinit var surveyDatabaseHelper: SurveyDatabaseHelper
+    private lateinit var registerButton: Button
     private val userViewModel: UserViewModel by viewModels {
         UserViewModelFactory(this)
     }
@@ -30,13 +29,17 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Initialize the database helper
-        surveyDatabaseHelper = SurveyDatabaseHelper(this)
+        // Set up the toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Login"
 
         // Initialize UI components
         usernameEditText = findViewById(R.id.username)
         passwordEditText = findViewById(R.id.password)
         loginButton = findViewById(R.id.loginButton)
+        registerButton = findViewById(R.id.registerButton)
 
         // Set click listener for login button
         loginButton.setOnClickListener {
@@ -61,6 +64,22 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Please enter both username and password", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        // Set click listener for register button
+        registerButton.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }

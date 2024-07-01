@@ -1,6 +1,7 @@
 package com.example.surveyapp.ui.activities
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -8,6 +9,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.example.surveyapp.R
 import com.example.surveyapp.database.SurveyDatabaseHelper
 import com.example.surveyapp.models.Answer
@@ -41,6 +43,11 @@ class TakeSurveyActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_take_survey)
+
+        // Initialize the toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Initialize the database helper
         surveyDatabaseHelper = SurveyDatabaseHelper(this)
@@ -79,6 +86,16 @@ class TakeSurveyActivity : AppCompatActivity() {
                 Toast.makeText(this, "Survey Completed", Toast.LENGTH_SHORT).show()
                 finish()
             }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

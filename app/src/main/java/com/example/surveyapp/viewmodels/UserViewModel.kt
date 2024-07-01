@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 class UserViewModel(private val repository: UserRepository) : ViewModel() {
 
     /**
-     * Inserts a new user.
+     * Inserts a new user into the repository.
      *
      * @param user The user to insert.
      */
@@ -29,7 +29,7 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     }
 
     /**
-     * Fetches a user by username and password.
+     * Fetches a user by username and password from the repository.
      *
      * @param username The username of the user.
      * @param password The password of the user.
@@ -45,7 +45,7 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     }
 
     /**
-     * Updates an existing user.
+     * Updates an existing user in the repository.
      *
      * @param user The user to update.
      */
@@ -58,7 +58,7 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     }
 
     /**
-     * Deletes a user.
+     * Deletes a user from the repository.
      *
      * @param user The user to delete.
      */
@@ -71,7 +71,7 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     }
 
     /**
-     * Fetches all admin users.
+     * Fetches all admin users from the repository.
      *
      * @param callback The callback to invoke with the list of admin users.
      */
@@ -85,7 +85,7 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     }
 
     /**
-     * Fetches all users.
+     * Fetches all users from the repository.
      *
      * @param callback The callback to invoke with the list of users.
      */

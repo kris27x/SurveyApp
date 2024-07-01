@@ -102,6 +102,14 @@ class EditSurveyActivity : AppCompatActivity() {
                 questionAdapter.submitList(questions)
             }
         }
+
+        // Set up the back button in the toolbar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     /**

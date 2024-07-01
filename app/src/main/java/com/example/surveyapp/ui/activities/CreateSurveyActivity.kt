@@ -46,5 +46,13 @@ class CreateSurveyActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please enter both title and description", Toast.LENGTH_SHORT).show()
             }
         }
+
+        // Set up the back button in the toolbar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }

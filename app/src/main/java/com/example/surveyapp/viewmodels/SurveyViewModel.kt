@@ -46,7 +46,7 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
     /**
      * Deletes a survey.
      *
-     * @param survey The survey to delete.
+     * @param surveyId The ID of the survey to delete.
      */
     fun deleteSurvey(surveyId: Int) {
         viewModelScope.launch {

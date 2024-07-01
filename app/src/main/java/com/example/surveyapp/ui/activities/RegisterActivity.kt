@@ -6,10 +6,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.example.surveyapp.R
-import com.example.surveyapp.database.SurveyDatabaseHelper
 import com.example.surveyapp.models.User
-import com.example.surveyapp.repositories.UserRepository
 import com.example.surveyapp.viewmodels.UserViewModel
 import com.example.surveyapp.viewmodels.UserViewModelFactory
 
@@ -21,7 +20,6 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var usernameEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var registerButton: Button
-    private lateinit var surveyDatabaseHelper: SurveyDatabaseHelper
     private val userViewModel: UserViewModel by viewModels {
         UserViewModelFactory(this)
     }
@@ -30,13 +28,21 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        // Initialize the database helper
-        surveyDatabaseHelper = SurveyDatabaseHelper(this)
-
         // Initialize UI components
         usernameEditText = findViewById(R.id.username)
         passwordEditText = findViewById(R.id.password)
         registerButton = findViewById(R.id.registerButton)
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+
+        // Set up the toolbar
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Register"
+
+        // Handle back button in toolbar
+        toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
 
         // Set click listener for register button
         registerButton.setOnClickListener {
