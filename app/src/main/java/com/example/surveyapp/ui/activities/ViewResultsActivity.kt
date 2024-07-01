@@ -2,10 +2,6 @@ package com.example.surveyapp.ui.activities
 
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -18,12 +14,14 @@ import com.example.surveyapp.viewmodels.SurveyViewModel
 import com.example.surveyapp.viewmodels.SurveyViewModelFactory
 
 /**
- * Activity for viewing survey results.
+ * Activity for viewing survey results and statistics.
  */
 class ViewResultsActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_SURVEY_ID = "com.example.surveyapp.ui.activities.SURVEY_ID"
+        const val EXTRA_USER_ID = "com.example.surveyapp.ui.activities.USER_ID"
+        const val EXTRA_IS_ADMIN = "com.example.surveyapp.ui.activities.IS_ADMIN"
     }
 
     private lateinit var resultsRecyclerView: RecyclerView
@@ -32,6 +30,8 @@ class ViewResultsActivity : AppCompatActivity() {
         SurveyViewModelFactory(this)
     }
     private var surveyId: Int = 0
+    private var userId: Int = 0
+    private var isAdmin: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +41,7 @@ class ViewResultsActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "View Results"
 
         // Initialize UI components
         resultsRecyclerView = findViewById(R.id.recyclerViewResults)
@@ -48,8 +49,11 @@ class ViewResultsActivity : AppCompatActivity() {
         resultsAdapter = ResultsAdapter()
         resultsRecyclerView.adapter = resultsAdapter
 
-        // Retrieve the survey ID from the intent
+        // Retrieve the survey ID, user ID, and admin status from the intent
         surveyId = intent.getIntExtra(EXTRA_SURVEY_ID, 0)
+        userId = intent.getIntExtra(EXTRA_USER_ID, 0)
+        isAdmin = intent.getBooleanExtra(EXTRA_IS_ADMIN, false)
+
         if (surveyId != 0) {
             surveyViewModel.getQuestionsForSurvey(surveyId) { questions ->
                 resultsAdapter.submitList(questions)
@@ -71,68 +75,6 @@ class ViewResultsActivity : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
-        }
-    }
-}
-
-/**
- * Adapter for displaying survey results.
- */
-class ResultsAdapter : RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder>() {
-
-    private var questions: List<Question> = emptyList()
-    private val answersMap: MutableMap<Int, List<Answer>> = mutableMapOf()
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ResultsViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_result, parent, false)
-        return ResultsViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: ResultsViewHolder, position: Int) {
-        val question = questions[position]
-        holder.bind(question, answersMap[question.id] ?: emptyList())
-    }
-
-    override fun getItemCount(): Int = questions.size
-
-    /**
-     * Submits a new list of questions to the adapter.
-     *
-     * @param questionList The new list of questions.
-     */
-    fun submitList(questionList: List<Question>) {
-        questions = questionList
-        notifyDataSetChanged()
-    }
-
-    /**
-     * Updates the answers for a specific question.
-     *
-     * @param questionId The ID of the question.
-     * @param answers The list of answers for the question.
-     */
-    fun updateAnswers(questionId: Int, answers: List<Answer>) {
-        answersMap[questionId] = answers
-        notifyItemChanged(questions.indexOfFirst { it.id == questionId })
-    }
-
-    /**
-     * ViewHolder class for displaying survey results.
-     */
-    class ResultsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val questionTextView: TextView = itemView.findViewById(R.id.textViewQuestion)
-        private val answersTextView: TextView = itemView.findViewById(R.id.textViewAnswers)
-
-        /**
-         * Binds the question and its answers to the views.
-         *
-         * @param question The question to bind.
-         * @param answers The list of answers to bind.
-         */
-        fun bind(question: Question, answers: List<Answer>) {
-            questionTextView.text = question.text
-            answersTextView.text = answers.joinToString(separator = "\n") { "User ${it.userId}: ${it.answerValue}" }
         }
     }
 }
