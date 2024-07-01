@@ -121,6 +121,7 @@ class QuestionAdapter : RecyclerView.Adapter<QuestionAdapter.QuestionViewHolder>
 
             // Set up radio buttons for Likert scale
             val options = listOf("Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree")
+            optionsRadioGroup.removeAllViews() // Clear any previous radio buttons
             options.forEachIndexed { index, option ->
                 val radioButton = RadioButton(itemView.context).apply {
                     text = option

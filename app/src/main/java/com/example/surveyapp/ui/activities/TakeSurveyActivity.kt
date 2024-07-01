@@ -11,7 +11,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.example.surveyapp.R
-import com.example.surveyapp.database.SurveyDatabaseHelper
 import com.example.surveyapp.models.Answer
 import com.example.surveyapp.models.Question
 import com.example.surveyapp.utils.LikertScale
@@ -29,7 +28,6 @@ class TakeSurveyActivity : AppCompatActivity() {
         const val EXTRA_IS_ADMIN = "com.example.surveyapp.ui.activities.IS_ADMIN"
     }
 
-    private lateinit var surveyDatabaseHelper: SurveyDatabaseHelper
     private val surveyViewModel: SurveyViewModel by viewModels {
         SurveyViewModelFactory(this)
     }
@@ -58,9 +56,6 @@ class TakeSurveyActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Take Survey"
-
-        // Initialize the database helper
-        surveyDatabaseHelper = SurveyDatabaseHelper(this)
 
         // Initialize UI components
         questionTextView = findViewById(R.id.textViewQuestion)

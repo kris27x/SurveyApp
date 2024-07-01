@@ -61,7 +61,11 @@ class SurveyListFragment : Fragment() {
     }
 }
 
-// Adapter for displaying the list of surveys
+/**
+ * Adapter for displaying the list of surveys.
+ *
+ * @property onSurveyClick Callback to handle survey item click events.
+ */
 class SurveyAdapter(private val onSurveyClick: (Survey) -> Unit) :
     RecyclerView.Adapter<SurveyAdapter.SurveyViewHolder>() {
 
@@ -85,10 +89,21 @@ class SurveyAdapter(private val onSurveyClick: (Survey) -> Unit) :
         notifyDataSetChanged()
     }
 
+    /**
+     * ViewHolder class for displaying survey items.
+     *
+     * @property itemView The view of the survey item.
+     */
     class SurveyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val surveyTitle: TextView = itemView.findViewById(R.id.textViewSurveyTitle)
         private val surveyDescription: TextView = itemView.findViewById(R.id.textViewSurveyDescription)
 
+        /**
+         * Binds the survey data to the views.
+         *
+         * @param survey The survey data to bind.
+         * @param onSurveyClick Callback to handle survey item click events.
+         */
         fun bind(survey: Survey, onSurveyClick: (Survey) -> Unit) {
             surveyTitle.text = survey.title
             surveyDescription.text = survey.description
