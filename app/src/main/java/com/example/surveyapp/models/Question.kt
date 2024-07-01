@@ -9,6 +9,6 @@ package com.example.surveyapp.models
  */
 data class Question(
     val id: Int = 0,
-    val surveyId: Int,
+    var surveyId: Int,
     val text: String
 )

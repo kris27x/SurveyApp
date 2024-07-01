@@ -10,26 +10,24 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:elevation="4dp"
-        tools:ignore="MissingConstraints" />
+        android:theme="?attr/actionBarTheme" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewSurveys"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/toolbar"
+        android:layout_above="@id/buttonAddSurvey"
+        android:layout_margin="16dp" />
 
     <Button
         android:id="@+id/buttonAddSurvey"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
-        android:text="Add Survey" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewSurveys"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/buttonAddSurvey"
-        android:layout_marginTop="8dp"
-        tools:listitem="@layout/item_survey" />
-
+        android:text="Add Survey"
+        android:backgroundTint="?attr/colorPrimary"
+        android:textColor="@android:color/white" />
 </RelativeLayout>

@@ -2,10 +2,12 @@ package com.example.surveyapp.ui.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
@@ -41,6 +43,12 @@ class AdminDashboardActivity : AppCompatActivity() {
         userId = intent.getIntExtra(EXTRA_USER_ID, 0)
         isAdmin = intent.getBooleanExtra(EXTRA_IS_ADMIN, false)
 
+        // Setup toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Admin Dashboard"
+
         // Initialize UI components
         surveyRecyclerView = findViewById(R.id.recyclerViewSurveys)
         addSurveyButton = findViewById(R.id.buttonAddSurvey)
@@ -49,13 +57,19 @@ class AdminDashboardActivity : AppCompatActivity() {
         surveyRecyclerView.layoutManager = LinearLayoutManager(this)
         surveyAdapter = SurveyAdapter(
             { survey -> onSurveySelected(survey) },
-            { survey -> onDeleteSurvey(survey) }
+            { survey -> onDeleteSurvey(survey) },
+            { survey -> onEditSurvey(survey) },
+            true // Admin is true
         )
         surveyRecyclerView.adapter = surveyAdapter
 
         // Observe the list of surveys
         surveyViewModel.getAllSurveys { surveys ->
-            surveyAdapter.submitList(surveys)
+            if (surveys.isNotEmpty()) {
+                surveyAdapter.submitList(surveys)
+            } else {
+                Toast.makeText(this, "No surveys available", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // Set click listener for adding a new survey
@@ -66,14 +80,6 @@ class AdminDashboardActivity : AppCompatActivity() {
             }
             startActivity(intent)
         }
-
-        // Set up the back button in the toolbar
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return true
     }
 
     /**
@@ -82,10 +88,10 @@ class AdminDashboardActivity : AppCompatActivity() {
      * @param survey The selected survey.
      */
     private fun onSurveySelected(survey: Survey) {
-        val intent = Intent(this, EditSurveyActivity::class.java).apply {
-            putExtra(EditSurveyActivity.EXTRA_SURVEY_ID, survey.id)
-            putExtra(EditSurveyActivity.EXTRA_USER_ID, userId)
-            putExtra(EditSurveyActivity.EXTRA_IS_ADMIN, isAdmin)
+        val intent = Intent(this, ViewResultsActivity::class.java).apply {
+            putExtra(ViewResultsActivity.EXTRA_SURVEY_ID, survey.id)
+            putExtra(ViewResultsActivity.EXTRA_USER_ID, userId)
+            putExtra(ViewResultsActivity.EXTRA_IS_ADMIN, isAdmin)
         }
         startActivity(intent)
     }
@@ -100,6 +106,35 @@ class AdminDashboardActivity : AppCompatActivity() {
         Toast.makeText(this, "Survey deleted", Toast.LENGTH_SHORT).show()
         surveyViewModel.getAllSurveys { surveys ->
             surveyAdapter.submitList(surveys)
+        }
+    }
+
+    /**
+     * Handles editing of a survey.
+     *
+     * @param survey The survey to edit.
+     */
+    private fun onEditSurvey(survey: Survey) {
+        val intent = Intent(this, EditSurveyActivity::class.java).apply {
+            putExtra(EditSurveyActivity.EXTRA_SURVEY_ID, survey.id)
+            putExtra(EditSurveyActivity.EXTRA_USER_ID, userId)
+            putExtra(EditSurveyActivity.EXTRA_IS_ADMIN, isAdmin)
+        }
+        startActivity(intent)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }

@@ -3,8 +3,8 @@ package com.example.surveyapp.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.surveyapp.models.Answer
-import com.example.surveyapp.models.Survey
 import com.example.surveyapp.models.Question
+import com.example.surveyapp.models.Survey
 import com.example.surveyapp.repositories.SurveyRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,15 +18,17 @@ import kotlinx.coroutines.withContext
 class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
 
     /**
-     * Inserts a new survey.
+     * Inserts a new survey and returns the survey ID through a callback.
      *
      * @param survey The survey to insert.
+     * @param callback The callback to invoke with the inserted survey ID.
      */
-    fun insertSurvey(survey: Survey) {
+    fun insertSurvey(survey: Survey, callback: (Long?) -> Unit) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
+            val surveyId = withContext(Dispatchers.IO) {
                 repository.insertSurvey(survey)
             }
+            callback(surveyId)
         }
     }
 
@@ -71,14 +73,14 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
     }
 
     /**
-     * Inserts a new question.
+     * Inserts a list of questions.
      *
-     * @param question The question to insert.
+     * @param questions The list of questions to insert.
      */
-    fun insertQuestion(question: Question) {
+    fun insertQuestions(questions: List<Question>) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                repository.insertQuestion(question)
+                repository.insertQuestions(questions)
             }
         }
     }

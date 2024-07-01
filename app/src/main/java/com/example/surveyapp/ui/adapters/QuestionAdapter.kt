@@ -70,10 +70,11 @@ class QuestionAdapter(
             onDeleteQuestion: (Question) -> Unit
         ) {
             questionTextView.text = question.text
+            questionEditText.setText(question.text)
 
             updateButton.setOnClickListener {
                 val updatedText = questionEditText.text.toString().trim()
-                if (updatedText.isNotEmpty()) {
+                if (updatedText.isNotEmpty() && updatedText != question.text) {
                     val updatedQuestion = question.copy(text = updatedText)
                     onUpdateQuestion(updatedQuestion)
                 }
