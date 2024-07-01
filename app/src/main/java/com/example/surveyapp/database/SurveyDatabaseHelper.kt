@@ -103,9 +103,7 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
             put(COLUMN_SURVEY_TITLE, survey.title)
             put(COLUMN_SURVEY_DESCRIPTION, survey.description)
         }
-        val id = db.insert(TABLE_SURVEYS, null, values)
-        db.close()
-        return id
+        return db.insert(TABLE_SURVEYS, null, values).also { db.close() }
     }
 
     fun getAllSurveys(): List<Survey> {
@@ -125,6 +123,33 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
         cursor.close()
         db.close()
         return surveys
+    }
+
+    fun getSurveyById(surveyId: Int): Survey? {
+        val db = this.readableDatabase
+        val cursor = db.query(
+            TABLE_SURVEYS,
+            null,
+            "$COLUMN_SURVEY_ID = ?",
+            arrayOf(surveyId.toString()),
+            null,
+            null,
+            null
+        )
+        return if (cursor.moveToFirst()) {
+            val survey = Survey(
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SURVEY_ID)),
+                title = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SURVEY_TITLE)),
+                description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SURVEY_DESCRIPTION))
+            )
+            cursor.close()
+            db.close()
+            survey
+        } else {
+            cursor.close()
+            db.close()
+            null
+        }
     }
 
     fun deleteSurvey(surveyId: Int): Int {
@@ -152,9 +177,25 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
             put(COLUMN_SURVEY_ID_QUESTION, question.surveyId)
             put(COLUMN_QUESTION_TEXT, question.text)
         }
-        val id = db.insert(TABLE_QUESTIONS, null, values)
-        db.close()
-        return id
+        return db.insert(TABLE_QUESTIONS, null, values).also { db.close() }
+    }
+
+    fun insertQuestions(questions: List<Question>) {
+        val db = this.writableDatabase
+        db.beginTransaction()
+        try {
+            for (question in questions) {
+                val values = ContentValues().apply {
+                    put(COLUMN_SURVEY_ID_QUESTION, question.surveyId)
+                    put(COLUMN_QUESTION_TEXT, question.text)
+                }
+                db.insert(TABLE_QUESTIONS, null, values)
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+            db.close()
+        }
     }
 
     fun getQuestionsForSurvey(surveyId: Int): List<Question> {
@@ -201,9 +242,26 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
             put(COLUMN_USER_ID_ANSWER, answer.userId)
             put(COLUMN_ANSWER_VALUE, answer.answerValue)
         }
-        val id = db.insert(TABLE_ANSWERS, null, values)
-        db.close()
-        return id
+        return db.insert(TABLE_ANSWERS, null, values).also { db.close() }
+    }
+
+    fun insertAnswers(answers: List<Answer>) {
+        val db = this.writableDatabase
+        db.beginTransaction()
+        try {
+            for (answer in answers) {
+                val values = ContentValues().apply {
+                    put(COLUMN_QUESTION_ID_ANSWER, answer.questionId)
+                    put(COLUMN_USER_ID_ANSWER, answer.userId)
+                    put(COLUMN_ANSWER_VALUE, answer.answerValue)
+                }
+                db.insert(TABLE_ANSWERS, null, values)
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+            db.close()
+        }
     }
 
     fun getAnswersForQuestion(questionId: Int): List<Answer> {
@@ -234,9 +292,7 @@ class SurveyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
             put(COLUMN_PASSWORD, user.password)
             put(COLUMN_IS_ADMIN, if (user.isAdmin) 1 else 0)
         }
-        val id = db.insert(TABLE_USERS, null, values)
-        db.close()
-        return id
+        return db.insert(TABLE_USERS, null, values).also { db.close() }
     }
 
     fun getUser(username: String, password: String): User? {
