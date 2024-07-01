@@ -21,6 +21,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private lateinit var usernameEditText: EditText
     private lateinit var passwordEditText: EditText
+    private lateinit var confirmPasswordEditText: EditText
     private lateinit var registerButton: Button
     private lateinit var adminCheckBox: CheckBox
     private val userViewModel: UserViewModel by viewModels {
@@ -34,6 +35,7 @@ class RegisterActivity : AppCompatActivity() {
         // Initialize UI components
         usernameEditText = findViewById(R.id.username)
         passwordEditText = findViewById(R.id.password)
+        confirmPasswordEditText = findViewById(R.id.confirmPassword)
         registerButton = findViewById(R.id.registerButton)
         adminCheckBox = findViewById(R.id.adminCheckBox)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -52,29 +54,39 @@ class RegisterActivity : AppCompatActivity() {
         registerButton.setOnClickListener {
             val username = usernameEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
+            val confirmPassword = confirmPasswordEditText.text.toString().trim()
             val isAdmin = adminCheckBox.isChecked
 
-            if (username.isNotEmpty() && password.isNotEmpty()) {
-                val newUser = User(
-                    username = username,
-                    password = password,
-                    isAdmin = isAdmin
-                )
-                userViewModel.insert(newUser)
-                Toast.makeText(this, "User Registered", Toast.LENGTH_SHORT).show()
+            if (username.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty()) {
+                if (password == confirmPassword) {
+                    userViewModel.getUser(username, password) { existingUser ->
+                        if (existingUser == null) {
+                            val newUser = User(
+                                username = username,
+                                password = password,
+                                isAdmin = isAdmin
+                            )
+                            userViewModel.insert(newUser)
+                            Toast.makeText(this, "User Registered", Toast.LENGTH_SHORT).show()
 
-                val intent = if (isAdmin) {
-                    Intent(this, AdminDashboardActivity::class.java)
+                            val intent = if (isAdmin) {
+                                Intent(this, AdminDashboardActivity::class.java)
+                            } else {
+                                Intent(this, UserDashboardActivity::class.java)
+                            }
+                            intent.putExtra("USER_ID", newUser.id)
+                            intent.putExtra("IS_ADMIN", isAdmin)
+                            startActivity(intent)
+                            finish() // Close the activity after registration
+                        } else {
+                            Toast.makeText(this, "Username is already taken", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 } else {
-                    Intent(this, UserDashboardActivity::class.java)
+                    Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
                 }
-                intent.putExtra("USER_ID", newUser.id)
-                intent.putExtra("IS_ADMIN", isAdmin)
-                startActivity(intent)
-
-                finish() // Close the activity after registration
             } else {
-                Toast.makeText(this, "Please enter both username and password", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             }
         }
     }

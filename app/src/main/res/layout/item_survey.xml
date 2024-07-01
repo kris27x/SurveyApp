@@ -20,11 +20,25 @@
         android:text="Survey Description"
         android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/buttonDeleteSurvey"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Delete Survey"
-        android:layout_gravity="end"
-        android:layout_marginTop="8dp"/>
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="8dp">
+
+        <Button
+            android:id="@+id/buttonEditSurvey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/buttonDeleteSurvey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:visibility="gone"/>
+    </LinearLayout>
 </LinearLayout>

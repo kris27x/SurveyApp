@@ -42,12 +42,22 @@
             android:layout_marginBottom="16dp"
             android:background="@drawable/edit_text_background"/>
 
+        <EditText
+            android:id="@+id/confirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Confirm Password"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/edit_text_background"/>
+
         <CheckBox
             android:id="@+id/adminCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Register as Admin"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"/>
 
         <Button
             android:id="@+id/registerButton"
