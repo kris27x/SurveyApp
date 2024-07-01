@@ -21,11 +21,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // Set up the toolbar
-        val toolbar: Toolbar = findViewById(R.id.tool_bar) // Ensure this matches your XML layout ID
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Survey App"
 
+        // Set click listeners for buttons
         findViewById<View>(R.id.buttonLogin).setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -34,6 +35,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.buttonRegister).setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
+        }
+
+        findViewById<View>(R.id.buttonExit).setOnClickListener {
+            finish()
         }
     }
 
