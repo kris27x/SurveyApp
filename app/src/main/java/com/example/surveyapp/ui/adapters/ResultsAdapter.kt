@@ -1,4 +1,4 @@
-package com.example.surveyapp.ui.activities
+package com.example.surveyapp.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +15,7 @@ import com.example.surveyapp.models.Question
 class ResultsAdapter : RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder>() {
 
     private var questions: List<Question> = emptyList()
-    private val answersMap: MutableMap<Int, List<Answer>> = mutableMapOf()
+    private val answersMap: MutableMap<Int, Map<Int, Int>> = mutableMapOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ResultsViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -25,7 +25,7 @@ class ResultsAdapter : RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder>() 
 
     override fun onBindViewHolder(holder: ResultsViewHolder, position: Int) {
         val question = questions[position]
-        holder.bind(question, answersMap[question.id] ?: emptyList())
+        holder.bind(question, answersMap[question.id] ?: emptyMap())
     }
 
     override fun getItemCount(): Int = questions.size
@@ -44,10 +44,10 @@ class ResultsAdapter : RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder>() 
      * Updates the answers for a specific question.
      *
      * @param questionId The ID of the question.
-     * @param answers The list of answers for the question.
+     * @param answerCounts The map of answer values to their counts for the question.
      */
-    fun updateAnswers(questionId: Int, answers: List<Answer>) {
-        answersMap[questionId] = answers
+    fun updateAnswers(questionId: Int, answerCounts: Map<Int, Int>) {
+        answersMap[questionId] = answerCounts
         notifyItemChanged(questions.indexOfFirst { it.id == questionId })
     }
 
@@ -62,11 +62,10 @@ class ResultsAdapter : RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder>() 
          * Binds the question and its answers to the views.
          *
          * @param question The question to bind.
-         * @param answers The list of answers to bind.
+         * @param answerCounts The map of answer values to their counts.
          */
-        fun bind(question: Question, answers: List<Answer>) {
+        fun bind(question: Question, answerCounts: Map<Int, Int>) {
             questionTextView.text = question.text
-            val answerCounts = answers.groupingBy { it.answerValue }.eachCount()
             val formattedAnswers = answerCounts.entries.joinToString(separator = "\n") { entry ->
                 val likertText = when (entry.key) {
                     1 -> "Strongly Disagree"

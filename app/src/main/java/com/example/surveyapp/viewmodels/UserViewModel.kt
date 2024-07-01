@@ -16,15 +16,17 @@ import kotlinx.coroutines.withContext
 class UserViewModel(private val repository: UserRepository) : ViewModel() {
 
     /**
-     * Inserts a new user into the repository.
+     * Inserts a new user into the repository and returns the user ID through a callback.
      *
      * @param user The user to insert.
+     * @param callback The callback to invoke with the inserted user ID.
      */
-    fun insert(user: User) {
+    fun insertUser(user: User, callback: (Long) -> Unit) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                repository.insert(user)
+            val userId = withContext(Dispatchers.IO) {
+                repository.insertUser(user)
             }
+            callback(userId)
         }
     }
 
@@ -60,12 +62,12 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     /**
      * Deletes a user from the repository.
      *
-     * @param user The user to delete.
+     * @param userId The ID of the user to delete.
      */
-    fun deleteUser(user: User) {
+    fun deleteUser(userId: Int) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                repository.deleteUser(user)
+                repository.deleteUser(userId)
             }
         }
     }

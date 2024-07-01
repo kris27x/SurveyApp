@@ -7,6 +7,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
@@ -61,7 +62,7 @@ class EditSurveyActivity : AppCompatActivity() {
         questionRecyclerView.layoutManager = LinearLayoutManager(this)
         questionAdapter = QuestionAdapter(
             { question -> onUpdateQuestion(question) },
-            { question -> onDeleteQuestion(question) }
+            { question -> onDeleteQuestion(question.id) } // Pass the question ID for deletion
         )
         questionRecyclerView.adapter = questionAdapter
 
@@ -121,9 +122,14 @@ class EditSurveyActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return true
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     /**
@@ -143,10 +149,10 @@ class EditSurveyActivity : AppCompatActivity() {
     /**
      * Handles deleting a question.
      *
-     * @param question The question to delete.
+     * @param questionId The ID of the question to delete.
      */
-    private fun onDeleteQuestion(question: Question) {
-        surveyViewModel.deleteQuestion(question)
+    private fun onDeleteQuestion(questionId: Int) {
+        surveyViewModel.deleteQuestion(questionId)
         Toast.makeText(this, "Question Deleted", Toast.LENGTH_SHORT).show()
         // Refresh the questions list
         surveyViewModel.getQuestionsForSurvey(surveyId) { questions ->

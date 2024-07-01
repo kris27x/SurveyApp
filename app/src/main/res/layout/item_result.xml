@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:text="Question Text"
         android:textStyle="bold"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:textColor="?android:textColorPrimary" />
 
     <TextView
         android:id="@+id/textViewAnswers"
@@ -19,5 +20,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Answers"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:textColor="?android:textColorSecondary" />
 </LinearLayout>

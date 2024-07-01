@@ -71,8 +71,6 @@ class ResultFragment : Fragment() {
 
 /**
  * Adapter for displaying survey results.
- *
- * @property onSurveyClick Callback to handle survey item click events.
  */
 class ResultsAdapter : RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder>() {
 

@@ -1,18 +1,32 @@
 package com.example.surveyapp.repositories
 
 import android.content.ContentValues
-import android.database.Cursor
 import com.example.surveyapp.database.SurveyDatabaseHelper
 import com.example.surveyapp.models.Answer
 import com.example.surveyapp.models.Question
 import com.example.surveyapp.models.Survey
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Repository for managing survey data operations.
  *
  * @property dbHelper The database helper for accessing survey data.
  */
-class SurveyRepository(private val dbHelper: SurveyDatabaseHelper) {
+class SurveyRepository private constructor(private val dbHelper: SurveyDatabaseHelper) {
+
+    companion object {
+        @Volatile
+        private var INSTANCE: SurveyRepository? = null
+
+        fun getInstance(dbHelper: SurveyDatabaseHelper): SurveyRepository {
+            return INSTANCE ?: synchronized(this) {
+                val instance = SurveyRepository(dbHelper)
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
 
     /**
      * Inserts a new survey.
@@ -20,13 +34,15 @@ class SurveyRepository(private val dbHelper: SurveyDatabaseHelper) {
      * @param survey The survey to insert.
      * @return The ID of the inserted survey.
      */
-    fun insertSurvey(survey: Survey): Long {
+    suspend fun insertSurvey(survey: Survey): Long = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put(SurveyDatabaseHelper.COLUMN_SURVEY_TITLE, survey.title)
-            put(SurveyDatabaseHelper.COLUMN_SURVEY_DESCRIPTION, survey.description)
+        db.use {
+            val values = ContentValues().apply {
+                put(SurveyDatabaseHelper.COLUMN_SURVEY_TITLE, survey.title)
+                put(SurveyDatabaseHelper.COLUMN_SURVEY_DESCRIPTION, survey.description)
+            }
+            db.insert(SurveyDatabaseHelper.TABLE_SURVEYS, null, values)
         }
-        return db.insert(SurveyDatabaseHelper.TABLE_SURVEYS, null, values)
     }
 
     /**
@@ -34,13 +50,15 @@ class SurveyRepository(private val dbHelper: SurveyDatabaseHelper) {
      *
      * @param survey The survey to update.
      */
-    fun updateSurvey(survey: Survey) {
+    suspend fun updateSurvey(survey: Survey) = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put(SurveyDatabaseHelper.COLUMN_SURVEY_TITLE, survey.title)
-            put(SurveyDatabaseHelper.COLUMN_SURVEY_DESCRIPTION, survey.description)
+        db.use {
+            val values = ContentValues().apply {
+                put(SurveyDatabaseHelper.COLUMN_SURVEY_TITLE, survey.title)
+                put(SurveyDatabaseHelper.COLUMN_SURVEY_DESCRIPTION, survey.description)
+            }
+            db.update(SurveyDatabaseHelper.TABLE_SURVEYS, values, "${SurveyDatabaseHelper.COLUMN_SURVEY_ID} = ?", arrayOf(survey.id.toString()))
         }
-        db.update(SurveyDatabaseHelper.TABLE_SURVEYS, values, "${SurveyDatabaseHelper.COLUMN_SURVEY_ID} = ?", arrayOf(survey.id.toString()))
     }
 
     /**
@@ -48,9 +66,11 @@ class SurveyRepository(private val dbHelper: SurveyDatabaseHelper) {
      *
      * @param surveyId The survey ID to delete.
      */
-    fun deleteSurvey(surveyId: Int) {
+    suspend fun deleteSurvey(surveyId: Int) = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
-        db.delete(SurveyDatabaseHelper.TABLE_SURVEYS, "${SurveyDatabaseHelper.COLUMN_SURVEY_ID} = ?", arrayOf(surveyId.toString()))
+        db.use {
+            db.delete(SurveyDatabaseHelper.TABLE_SURVEYS, "${SurveyDatabaseHelper.COLUMN_SURVEY_ID} = ?", arrayOf(surveyId.toString()))
+        }
     }
 
     /**
@@ -58,27 +78,19 @@ class SurveyRepository(private val dbHelper: SurveyDatabaseHelper) {
      *
      * @return A list of all surveys.
      */
-    fun getAllSurveys(): List<Survey> {
+    suspend fun getAllSurveys(): List<Survey> = withContext(Dispatchers.IO) {
         val db = dbHelper.readableDatabase
-        val cursor: Cursor = db.query(
-            SurveyDatabaseHelper.TABLE_SURVEYS,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        )
-
         val surveys = mutableListOf<Survey>()
-        while (cursor.moveToNext()) {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_ID))
-            val title = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_TITLE))
-            val description = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_DESCRIPTION))
-            surveys.add(Survey(id, title, description))
+        val cursor = db.query(SurveyDatabaseHelper.TABLE_SURVEYS, null, null, null, null, null, null)
+        cursor.use {
+            while (it.moveToNext()) {
+                val id = it.getInt(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_ID))
+                val title = it.getString(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_TITLE))
+                val description = it.getString(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_DESCRIPTION))
+                surveys.add(Survey(id, title, description))
+            }
         }
-        cursor.close()
-        return surveys
+        surveys
     }
 
     /**
@@ -87,13 +99,15 @@ class SurveyRepository(private val dbHelper: SurveyDatabaseHelper) {
      * @param question The question to insert.
      * @return The ID of the inserted question.
      */
-    fun insertQuestion(question: Question): Long {
+    suspend fun insertQuestion(question: Question): Long = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put(SurveyDatabaseHelper.COLUMN_SURVEY_ID_QUESTION, question.surveyId)
-            put(SurveyDatabaseHelper.COLUMN_QUESTION_TEXT, question.text)
+        db.use {
+            val values = ContentValues().apply {
+                put(SurveyDatabaseHelper.COLUMN_SURVEY_ID_QUESTION, question.surveyId)
+                put(SurveyDatabaseHelper.COLUMN_QUESTION_TEXT, question.text)
+            }
+            db.insert(SurveyDatabaseHelper.TABLE_QUESTIONS, null, values)
         }
-        return db.insert(SurveyDatabaseHelper.TABLE_QUESTIONS, null, values)
     }
 
     /**
@@ -101,7 +115,7 @@ class SurveyRepository(private val dbHelper: SurveyDatabaseHelper) {
      *
      * @param questions The list of questions to insert.
      */
-    fun insertQuestions(questions: List<Question>) {
+    suspend fun insertQuestions(questions: List<Question>) = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
         db.beginTransaction()
         try {
@@ -123,22 +137,26 @@ class SurveyRepository(private val dbHelper: SurveyDatabaseHelper) {
      *
      * @param question The question to update.
      */
-    fun updateQuestion(question: Question) {
+    suspend fun updateQuestion(question: Question) = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put(SurveyDatabaseHelper.COLUMN_QUESTION_TEXT, question.text)
+        db.use {
+            val values = ContentValues().apply {
+                put(SurveyDatabaseHelper.COLUMN_QUESTION_TEXT, question.text)
+            }
+            db.update(SurveyDatabaseHelper.TABLE_QUESTIONS, values, "${SurveyDatabaseHelper.COLUMN_QUESTION_ID} = ?", arrayOf(question.id.toString()))
         }
-        db.update(SurveyDatabaseHelper.TABLE_QUESTIONS, values, "${SurveyDatabaseHelper.COLUMN_QUESTION_ID} = ?", arrayOf(question.id.toString()))
     }
 
     /**
      * Deletes a question.
      *
-     * @param question The question to delete.
+     * @param questionId The ID of the question to delete.
      */
-    fun deleteQuestion(question: Question) {
+    suspend fun deleteQuestion(questionId: Int) = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
-        db.delete(SurveyDatabaseHelper.TABLE_QUESTIONS, "${SurveyDatabaseHelper.COLUMN_QUESTION_ID} = ?", arrayOf(question.id.toString()))
+        db.use {
+            db.delete(SurveyDatabaseHelper.TABLE_QUESTIONS, "${SurveyDatabaseHelper.COLUMN_QUESTION_ID} = ?", arrayOf(questionId.toString()))
+        }
     }
 
     /**
@@ -147,26 +165,18 @@ class SurveyRepository(private val dbHelper: SurveyDatabaseHelper) {
      * @param surveyId The ID of the survey.
      * @return A list of questions for the specified survey.
      */
-    fun getQuestionsForSurvey(surveyId: Int): List<Question> {
+    suspend fun getQuestionsForSurvey(surveyId: Int): List<Question> = withContext(Dispatchers.IO) {
         val db = dbHelper.readableDatabase
-        val cursor: Cursor = db.query(
-            SurveyDatabaseHelper.TABLE_QUESTIONS,
-            null,
-            "${SurveyDatabaseHelper.COLUMN_SURVEY_ID_QUESTION} = ?",
-            arrayOf(surveyId.toString()),
-            null,
-            null,
-            null
-        )
-
         val questions = mutableListOf<Question>()
-        while (cursor.moveToNext()) {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_QUESTION_ID))
-            val text = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_QUESTION_TEXT))
-            questions.add(Question(id, surveyId, text))
+        val cursor = db.query(SurveyDatabaseHelper.TABLE_QUESTIONS, null, "${SurveyDatabaseHelper.COLUMN_SURVEY_ID_QUESTION} = ?", arrayOf(surveyId.toString()), null, null, null)
+        cursor.use {
+            while (it.moveToNext()) {
+                val id = it.getInt(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_QUESTION_ID))
+                val text = it.getString(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_QUESTION_TEXT))
+                questions.add(Question(id, surveyId, text))
+            }
         }
-        cursor.close()
-        return questions
+        questions
     }
 
     /**
@@ -175,14 +185,16 @@ class SurveyRepository(private val dbHelper: SurveyDatabaseHelper) {
      * @param answer The answer to insert.
      * @return The ID of the inserted answer.
      */
-    fun insertAnswer(answer: Answer): Long {
+    suspend fun insertAnswer(answer: Answer): Long = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put(SurveyDatabaseHelper.COLUMN_QUESTION_ID_ANSWER, answer.questionId)
-            put(SurveyDatabaseHelper.COLUMN_USER_ID_ANSWER, answer.userId)
-            put(SurveyDatabaseHelper.COLUMN_ANSWER_VALUE, answer.answerValue)
+        db.use {
+            val values = ContentValues().apply {
+                put(SurveyDatabaseHelper.COLUMN_QUESTION_ID_ANSWER, answer.questionId)
+                put(SurveyDatabaseHelper.COLUMN_USER_ID_ANSWER, answer.userId)
+                put(SurveyDatabaseHelper.COLUMN_ANSWER_VALUE, answer.answerValue)
+            }
+            db.insert(SurveyDatabaseHelper.TABLE_ANSWERS, null, values)
         }
-        return db.insert(SurveyDatabaseHelper.TABLE_ANSWERS, null, values)
     }
 
     /**
@@ -191,27 +203,19 @@ class SurveyRepository(private val dbHelper: SurveyDatabaseHelper) {
      * @param questionId The ID of the question.
      * @return A list of answers for the specified question.
      */
-    fun getAnswersForQuestion(questionId: Int): List<Answer> {
+    suspend fun getAnswersForQuestion(questionId: Int): List<Answer> = withContext(Dispatchers.IO) {
         val db = dbHelper.readableDatabase
-        val cursor: Cursor = db.query(
-            SurveyDatabaseHelper.TABLE_ANSWERS,
-            null,
-            "${SurveyDatabaseHelper.COLUMN_QUESTION_ID_ANSWER} = ?",
-            arrayOf(questionId.toString()),
-            null,
-            null,
-            null
-        )
-
         val answers = mutableListOf<Answer>()
-        while (cursor.moveToNext()) {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_ANSWER_ID))
-            val userId = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USER_ID_ANSWER))
-            val answerValue = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_ANSWER_VALUE))
-            answers.add(Answer(id, questionId, userId, answerValue))
+        val cursor = db.query(SurveyDatabaseHelper.TABLE_ANSWERS, null, "${SurveyDatabaseHelper.COLUMN_QUESTION_ID_ANSWER} = ?", arrayOf(questionId.toString()), null, null, null)
+        cursor.use {
+            while (it.moveToNext()) {
+                val id = it.getInt(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_ANSWER_ID))
+                val userId = it.getInt(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USER_ID_ANSWER))
+                val answerValue = it.getInt(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_ANSWER_VALUE))
+                answers.add(Answer(id, questionId, userId, answerValue))
+            }
         }
-        cursor.close()
-        return answers
+        answers
     }
 
     /**
@@ -220,27 +224,18 @@ class SurveyRepository(private val dbHelper: SurveyDatabaseHelper) {
      * @param surveyId The ID of the survey.
      * @return The survey with the specified ID, or null if not found.
      */
-    fun getSurveyById(surveyId: Int): Survey? {
+    suspend fun getSurveyById(surveyId: Int): Survey? = withContext(Dispatchers.IO) {
         val db = dbHelper.readableDatabase
-        val cursor: Cursor = db.query(
-            SurveyDatabaseHelper.TABLE_SURVEYS,
-            null,
-            "${SurveyDatabaseHelper.COLUMN_SURVEY_ID} = ?",
-            arrayOf(surveyId.toString()),
-            null,
-            null,
-            null
-        )
-
-        return if (cursor.moveToFirst()) {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_ID))
-            val title = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_TITLE))
-            val description = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_DESCRIPTION))
-            cursor.close()
-            Survey(id, title, description)
-        } else {
-            cursor.close()
-            null
+        var survey: Survey? = null
+        val cursor = db.query(SurveyDatabaseHelper.TABLE_SURVEYS, null, "${SurveyDatabaseHelper.COLUMN_SURVEY_ID} = ?", arrayOf(surveyId.toString()), null, null, null)
+        cursor.use {
+            if (it.moveToFirst()) {
+                val id = it.getInt(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_ID))
+                val title = it.getString(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_TITLE))
+                val description = it.getString(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_SURVEY_DESCRIPTION))
+                survey = Survey(id, title, description)
+            }
         }
+        survey
     }
 }

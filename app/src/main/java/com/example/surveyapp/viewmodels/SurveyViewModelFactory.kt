@@ -21,8 +21,10 @@ class SurveyViewModelFactory(private val context: Context) : ViewModelProvider.N
      */
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SurveyViewModel::class.java)) {
+            val dbHelper = SurveyDatabaseHelper.getInstance(context)
+            val repository = SurveyRepository.getInstance(dbHelper)
             @Suppress("UNCHECKED_CAST")
-            return SurveyViewModel(SurveyRepository(SurveyDatabaseHelper(context))) as T
+            return SurveyViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

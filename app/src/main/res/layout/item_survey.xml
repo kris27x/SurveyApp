@@ -32,13 +32,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Edit"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:backgroundTint="?attr/colorPrimary"
+            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/buttonDeleteSurvey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Delete"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:backgroundTint="?attr/colorPrimary"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 </LinearLayout>

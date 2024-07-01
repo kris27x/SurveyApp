@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
 import com.example.surveyapp.models.Answer
 import com.example.surveyapp.models.Question
+import com.example.surveyapp.utils.LikertScale
 import com.example.surveyapp.viewmodels.SurveyViewModel
 import com.example.surveyapp.viewmodels.SurveyViewModelFactory
 
@@ -32,6 +33,7 @@ class QuestionFragment : Fragment() {
     }
 
     private var surveyId: Int = 0
+    private var userId: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,12 +48,13 @@ class QuestionFragment : Fragment() {
 
         // Setup RecyclerView
         questionsRecyclerView.layoutManager = LinearLayoutManager(context)
-        questionAdapter = QuestionAdapter()
+        questionAdapter = QuestionAdapter(userId)
         questionsRecyclerView.adapter = questionAdapter
 
         // Retrieve survey ID from arguments
         arguments?.let {
             surveyId = it.getInt(EXTRA_SURVEY_ID)
+            userId = it.getInt(EXTRA_USER_ID, 0)
         }
 
         // Fetch questions for the survey
@@ -81,11 +84,12 @@ class QuestionFragment : Fragment() {
 
     companion object {
         const val EXTRA_SURVEY_ID = "com.example.surveyapp.ui.fragments.SURVEY_ID"
+        const val EXTRA_USER_ID = "com.example.surveyapp.ui.fragments.USER_ID"
     }
 }
 
 // Adapter for displaying the list of questions
-class QuestionAdapter : RecyclerView.Adapter<QuestionAdapter.QuestionViewHolder>() {
+class QuestionAdapter(private val userId: Int) : RecyclerView.Adapter<QuestionAdapter.QuestionViewHolder>() {
 
     private var questions: List<Question> = emptyList()
     private val answersMap: MutableMap<Int, Int> = mutableMapOf()
@@ -109,7 +113,11 @@ class QuestionAdapter : RecyclerView.Adapter<QuestionAdapter.QuestionViewHolder>
     }
 
     fun getAnswers(): List<Answer> {
-        return answersMap.map { Answer(questionId = it.key, userId = 0, answerValue = it.value) }
+        return questions.mapNotNull { question ->
+            answersMap[question.id]?.let { answerValue ->
+                Answer(questionId = question.id, userId = userId, answerValue = answerValue)
+            }
+        }
     }
 
     inner class QuestionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

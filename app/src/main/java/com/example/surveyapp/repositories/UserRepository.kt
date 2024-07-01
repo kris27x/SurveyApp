@@ -7,11 +7,21 @@ import com.example.surveyapp.models.User
 
 /**
  * Repository for managing user data operations.
- *
- * @property context The context for accessing resources and creating the database helper.
  */
-class UserRepository(context: Context) {
-    private val dbHelper = SurveyDatabaseHelper(context)
+class UserRepository private constructor(private val dbHelper: SurveyDatabaseHelper) {
+
+    companion object {
+        @Volatile
+        private var INSTANCE: UserRepository? = null
+
+        fun getInstance(context: Context): UserRepository {
+            return INSTANCE ?: synchronized(this) {
+                val instance = UserRepository(SurveyDatabaseHelper.getInstance(context))
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
 
     /**
      * Inserts a new user.
@@ -19,14 +29,16 @@ class UserRepository(context: Context) {
      * @param user The user to insert.
      * @return The ID of the inserted user.
      */
-    fun insert(user: User): Long {
+    fun insertUser(user: User): Long {
         val db = dbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put(SurveyDatabaseHelper.COLUMN_USERNAME, user.username)
-            put(SurveyDatabaseHelper.COLUMN_PASSWORD, user.password)
-            put(SurveyDatabaseHelper.COLUMN_IS_ADMIN, if (user.isAdmin) 1 else 0)
+        return db.use {
+            val values = ContentValues().apply {
+                put(SurveyDatabaseHelper.COLUMN_USERNAME, user.username)
+                put(SurveyDatabaseHelper.COLUMN_PASSWORD, user.password)
+                put(SurveyDatabaseHelper.COLUMN_IS_ADMIN, if (user.isAdmin) 1 else 0)
+            }
+            it.insert(SurveyDatabaseHelper.TABLE_USERS, null, values)
         }
-        return db.insert(SurveyDatabaseHelper.TABLE_USERS, null, values)
     }
 
     /**
@@ -48,15 +60,14 @@ class UserRepository(context: Context) {
             null
         )
 
-        return if (cursor.moveToFirst()) {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USER_ID))
-            val isAdmin = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_IS_ADMIN)) == 1
-            val user = User(id, username, password, isAdmin)
-            cursor.close()
-            user
-        } else {
-            cursor.close()
-            null
+        return cursor.use {
+            if (it.moveToFirst()) {
+                val id = it.getInt(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USER_ID))
+                val isAdmin = it.getInt(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_IS_ADMIN)) == 1
+                User(id, username, password, isAdmin)
+            } else {
+                null
+            }
         }
     }
 
@@ -65,24 +76,28 @@ class UserRepository(context: Context) {
      *
      * @param user The user to update.
      */
-    fun updateUser(user: User) {
+    fun updateUser(user: User): Int {
         val db = dbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put(SurveyDatabaseHelper.COLUMN_USERNAME, user.username)
-            put(SurveyDatabaseHelper.COLUMN_PASSWORD, user.password)
-            put(SurveyDatabaseHelper.COLUMN_IS_ADMIN, if (user.isAdmin) 1 else 0)
+        return db.use {
+            val values = ContentValues().apply {
+                put(SurveyDatabaseHelper.COLUMN_USERNAME, user.username)
+                put(SurveyDatabaseHelper.COLUMN_PASSWORD, user.password)
+                put(SurveyDatabaseHelper.COLUMN_IS_ADMIN, if (user.isAdmin) 1 else 0)
+            }
+            it.update(SurveyDatabaseHelper.TABLE_USERS, values, "${SurveyDatabaseHelper.COLUMN_USER_ID} = ?", arrayOf(user.id.toString()))
         }
-        db.update(SurveyDatabaseHelper.TABLE_USERS, values, "${SurveyDatabaseHelper.COLUMN_USER_ID} = ?", arrayOf(user.id.toString()))
     }
 
     /**
      * Deletes a user.
      *
-     * @param user The user to delete.
+     * @param userId The ID of the user to delete.
      */
-    fun deleteUser(user: User) {
+    fun deleteUser(userId: Int): Int {
         val db = dbHelper.writableDatabase
-        db.delete(SurveyDatabaseHelper.TABLE_USERS, "${SurveyDatabaseHelper.COLUMN_USER_ID} = ?", arrayOf(user.id.toString()))
+        return db.use {
+            it.delete(SurveyDatabaseHelper.TABLE_USERS, "${SurveyDatabaseHelper.COLUMN_USER_ID} = ?", arrayOf(userId.toString()))
+        }
     }
 
     /**
@@ -103,13 +118,14 @@ class UserRepository(context: Context) {
         )
 
         val adminUsers = mutableListOf<User>()
-        while (cursor.moveToNext()) {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USER_ID))
-            val username = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USERNAME))
-            val password = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_PASSWORD))
-            adminUsers.add(User(id, username, password, true))
+        cursor.use {
+            while (it.moveToNext()) {
+                val id = it.getInt(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USER_ID))
+                val username = it.getString(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USERNAME))
+                val password = it.getString(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_PASSWORD))
+                adminUsers.add(User(id, username, password, true))
+            }
         }
-        cursor.close()
         return adminUsers
     }
 
@@ -131,14 +147,15 @@ class UserRepository(context: Context) {
         )
 
         val users = mutableListOf<User>()
-        while (cursor.moveToNext()) {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USER_ID))
-            val username = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USERNAME))
-            val password = cursor.getString(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_PASSWORD))
-            val isAdmin = cursor.getInt(cursor.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_IS_ADMIN)) == 1
-            users.add(User(id, username, password, isAdmin))
+        cursor.use {
+            while (it.moveToNext()) {
+                val id = it.getInt(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USER_ID))
+                val username = it.getString(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_USERNAME))
+                val password = it.getString(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_PASSWORD))
+                val isAdmin = it.getInt(it.getColumnIndexOrThrow(SurveyDatabaseHelper.COLUMN_IS_ADMIN)) == 1
+                users.add(User(id, username, password, isAdmin))
+            }
         }
-        cursor.close()
         return users
     }
 }

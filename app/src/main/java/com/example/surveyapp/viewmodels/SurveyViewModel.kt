@@ -116,12 +116,12 @@ class SurveyViewModel(private val repository: SurveyRepository) : ViewModel() {
     /**
      * Deletes a question.
      *
-     * @param question The question to delete.
+     * @param questionId The ID of the question to delete.
      */
-    fun deleteQuestion(question: Question) {
+    fun deleteQuestion(questionId: Int) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                repository.deleteQuestion(question)
+                repository.deleteQuestion(questionId)
             }
         }
     }

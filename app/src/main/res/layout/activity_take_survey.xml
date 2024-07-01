@@ -16,7 +16,7 @@
 
     <TextView
         android:id="@+id/textViewQuestion"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -35,6 +35,8 @@
         android:layout_height="wrap_content"
         android:text="Submit"
         android:layout_gravity="end"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:backgroundTint="?attr/colorPrimary"
+        android:textColor="@android:color/white" />
 
 </LinearLayout>

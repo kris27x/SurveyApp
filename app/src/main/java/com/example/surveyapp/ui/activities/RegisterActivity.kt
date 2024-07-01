@@ -66,18 +66,19 @@ class RegisterActivity : AppCompatActivity() {
                                 password = password,
                                 isAdmin = isAdmin
                             )
-                            userViewModel.insert(newUser)
-                            Toast.makeText(this, "User Registered", Toast.LENGTH_SHORT).show()
+                            userViewModel.insertUser(newUser) { userId ->
+                                Toast.makeText(this, "User Registered", Toast.LENGTH_SHORT).show()
 
-                            val intent = if (isAdmin) {
-                                Intent(this, AdminDashboardActivity::class.java)
-                            } else {
-                                Intent(this, UserDashboardActivity::class.java)
+                                val intent = if (isAdmin) {
+                                    Intent(this, AdminDashboardActivity::class.java)
+                                } else {
+                                    Intent(this, UserDashboardActivity::class.java)
+                                }
+                                intent.putExtra("USER_ID", userId)
+                                intent.putExtra("IS_ADMIN", isAdmin)
+                                startActivity(intent)
+                                finish() // Close the activity after registration
                             }
-                            intent.putExtra("USER_ID", newUser.id)
-                            intent.putExtra("IS_ADMIN", isAdmin)
-                            startActivity(intent)
-                            finish() // Close the activity after registration
                         } else {
                             Toast.makeText(this, "Username is already taken", Toast.LENGTH_SHORT).show()
                         }

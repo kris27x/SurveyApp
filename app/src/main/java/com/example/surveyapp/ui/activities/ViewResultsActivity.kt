@@ -8,8 +8,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
-import com.example.surveyapp.models.Answer
-import com.example.surveyapp.models.Question
+import com.example.surveyapp.ui.adapters.ResultsAdapter
 import com.example.surveyapp.viewmodels.SurveyViewModel
 import com.example.surveyapp.viewmodels.SurveyViewModelFactory
 
@@ -59,7 +58,8 @@ class ViewResultsActivity : AppCompatActivity() {
                 resultsAdapter.submitList(questions)
                 questions.forEach { question ->
                     surveyViewModel.getAnswersForQuestion(question.id) { answers ->
-                        resultsAdapter.updateAnswers(question.id, answers)
+                        val answerCounts = answers.groupBy { it.answerValue }.mapValues { it.value.size }
+                        resultsAdapter.updateAnswers(question.id, answerCounts)
                     }
                 }
             }

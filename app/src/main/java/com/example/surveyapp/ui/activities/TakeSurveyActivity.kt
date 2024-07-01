@@ -1,5 +1,6 @@
 package com.example.surveyapp.ui.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Button
@@ -86,7 +87,7 @@ class TakeSurveyActivity : AppCompatActivity() {
             } else {
                 saveAnswers()
                 Toast.makeText(this, "Survey Completed", Toast.LENGTH_SHORT).show()
-                finish()
+                navigateToUserDashboard()
             }
         }
     }
@@ -157,5 +158,17 @@ class TakeSurveyActivity : AppCompatActivity() {
 
             surveyViewModel.insertAnswer(answer)
         }
+    }
+
+    /**
+     * Navigates to the User Dashboard.
+     */
+    private fun navigateToUserDashboard() {
+        val intent = Intent(this, UserDashboardActivity::class.java).apply {
+            putExtra(EXTRA_USER_ID, userId)
+            putExtra(EXTRA_IS_ADMIN, isAdmin)
+        }
+        startActivity(intent)
+        finish()
     }
 }
