@@ -3,7 +3,6 @@ package com.example.surveyapp.viewmodels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.surveyapp.database.SurveyDatabaseHelper
 import com.example.surveyapp.repositories.SurveyRepository
 
 /**
@@ -21,8 +20,7 @@ class SurveyViewModelFactory(private val context: Context) : ViewModelProvider.N
      */
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SurveyViewModel::class.java)) {
-            val dbHelper = SurveyDatabaseHelper.getInstance(context)
-            val repository = SurveyRepository.getInstance(dbHelper)
+            val repository = SurveyRepository.getInstance(context)
             @Suppress("UNCHECKED_CAST")
             return SurveyViewModel(repository) as T
         }

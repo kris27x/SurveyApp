@@ -8,7 +8,9 @@ import com.example.surveyapp.models.User
 /**
  * Repository for managing user data operations.
  */
-class UserRepository private constructor(private val dbHelper: SurveyDatabaseHelper) {
+class UserRepository private constructor(private val context: Context) {
+
+    private val dbHelper: SurveyDatabaseHelper = SurveyDatabaseHelper.getInstance(context)
 
     companion object {
         @Volatile
@@ -16,7 +18,7 @@ class UserRepository private constructor(private val dbHelper: SurveyDatabaseHel
 
         fun getInstance(context: Context): UserRepository {
             return INSTANCE ?: synchronized(this) {
-                val instance = UserRepository(SurveyDatabaseHelper.getInstance(context))
+                val instance = UserRepository(context)
                 INSTANCE = instance
                 instance
             }

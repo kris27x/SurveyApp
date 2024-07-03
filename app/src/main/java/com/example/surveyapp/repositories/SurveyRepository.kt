@@ -1,5 +1,6 @@
 package com.example.surveyapp.repositories
 
+import android.content.Context
 import android.content.ContentValues
 import com.example.surveyapp.database.SurveyDatabaseHelper
 import com.example.surveyapp.models.Answer
@@ -19,8 +20,9 @@ class SurveyRepository private constructor(private val dbHelper: SurveyDatabaseH
         @Volatile
         private var INSTANCE: SurveyRepository? = null
 
-        fun getInstance(dbHelper: SurveyDatabaseHelper): SurveyRepository {
+        fun getInstance(context: Context): SurveyRepository {
             return INSTANCE ?: synchronized(this) {
+                val dbHelper = SurveyDatabaseHelper.getInstance(context.applicationContext)
                 val instance = SurveyRepository(dbHelper)
                 INSTANCE = instance
                 instance
@@ -36,13 +38,19 @@ class SurveyRepository private constructor(private val dbHelper: SurveyDatabaseH
      */
     suspend fun insertSurvey(survey: Survey): Long = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
-        db.use {
+        var surveyId: Long = -1
+        db.beginTransaction()
+        try {
             val values = ContentValues().apply {
                 put(SurveyDatabaseHelper.COLUMN_SURVEY_TITLE, survey.title)
                 put(SurveyDatabaseHelper.COLUMN_SURVEY_DESCRIPTION, survey.description)
             }
-            db.insert(SurveyDatabaseHelper.TABLE_SURVEYS, null, values)
+            surveyId = db.insert(SurveyDatabaseHelper.TABLE_SURVEYS, null, values)
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
         }
+        surveyId
     }
 
     /**
@@ -52,12 +60,16 @@ class SurveyRepository private constructor(private val dbHelper: SurveyDatabaseH
      */
     suspend fun updateSurvey(survey: Survey) = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
-        db.use {
+        db.beginTransaction()
+        try {
             val values = ContentValues().apply {
                 put(SurveyDatabaseHelper.COLUMN_SURVEY_TITLE, survey.title)
                 put(SurveyDatabaseHelper.COLUMN_SURVEY_DESCRIPTION, survey.description)
             }
             db.update(SurveyDatabaseHelper.TABLE_SURVEYS, values, "${SurveyDatabaseHelper.COLUMN_SURVEY_ID} = ?", arrayOf(survey.id.toString()))
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
         }
     }
 
@@ -68,8 +80,12 @@ class SurveyRepository private constructor(private val dbHelper: SurveyDatabaseH
      */
     suspend fun deleteSurvey(surveyId: Int) = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
-        db.use {
+        db.beginTransaction()
+        try {
             db.delete(SurveyDatabaseHelper.TABLE_SURVEYS, "${SurveyDatabaseHelper.COLUMN_SURVEY_ID} = ?", arrayOf(surveyId.toString()))
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
         }
     }
 
@@ -101,13 +117,19 @@ class SurveyRepository private constructor(private val dbHelper: SurveyDatabaseH
      */
     suspend fun insertQuestion(question: Question): Long = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
-        db.use {
+        var questionId: Long = -1
+        db.beginTransaction()
+        try {
             val values = ContentValues().apply {
                 put(SurveyDatabaseHelper.COLUMN_SURVEY_ID_QUESTION, question.surveyId)
                 put(SurveyDatabaseHelper.COLUMN_QUESTION_TEXT, question.text)
             }
-            db.insert(SurveyDatabaseHelper.TABLE_QUESTIONS, null, values)
+            questionId = db.insert(SurveyDatabaseHelper.TABLE_QUESTIONS, null, values)
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
         }
+        questionId
     }
 
     /**
@@ -139,11 +161,15 @@ class SurveyRepository private constructor(private val dbHelper: SurveyDatabaseH
      */
     suspend fun updateQuestion(question: Question) = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
-        db.use {
+        db.beginTransaction()
+        try {
             val values = ContentValues().apply {
                 put(SurveyDatabaseHelper.COLUMN_QUESTION_TEXT, question.text)
             }
             db.update(SurveyDatabaseHelper.TABLE_QUESTIONS, values, "${SurveyDatabaseHelper.COLUMN_QUESTION_ID} = ?", arrayOf(question.id.toString()))
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
         }
     }
 
@@ -154,8 +180,12 @@ class SurveyRepository private constructor(private val dbHelper: SurveyDatabaseH
      */
     suspend fun deleteQuestion(questionId: Int) = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
-        db.use {
+        db.beginTransaction()
+        try {
             db.delete(SurveyDatabaseHelper.TABLE_QUESTIONS, "${SurveyDatabaseHelper.COLUMN_QUESTION_ID} = ?", arrayOf(questionId.toString()))
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
         }
     }
 
@@ -187,14 +217,20 @@ class SurveyRepository private constructor(private val dbHelper: SurveyDatabaseH
      */
     suspend fun insertAnswer(answer: Answer): Long = withContext(Dispatchers.IO) {
         val db = dbHelper.writableDatabase
-        db.use {
+        var answerId: Long = -1
+        db.beginTransaction()
+        try {
             val values = ContentValues().apply {
                 put(SurveyDatabaseHelper.COLUMN_QUESTION_ID_ANSWER, answer.questionId)
                 put(SurveyDatabaseHelper.COLUMN_USER_ID_ANSWER, answer.userId)
                 put(SurveyDatabaseHelper.COLUMN_ANSWER_VALUE, answer.answerValue)
             }
-            db.insert(SurveyDatabaseHelper.TABLE_ANSWERS, null, values)
+            answerId = db.insert(SurveyDatabaseHelper.TABLE_ANSWERS, null, values)
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
         }
+        answerId
     }
 
     /**

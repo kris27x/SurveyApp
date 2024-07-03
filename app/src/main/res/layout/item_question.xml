@@ -23,7 +23,9 @@
         android:inputType="text"
         android:layout_marginBottom="8dp"
         android:background="@drawable/edit_text_background"
-        android:padding="12dp" />
+        android:padding="12dp"
+        android:textColor="@color/on_background"
+        android:textColorHint="@color/grey_500" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,8 +40,11 @@
             android:text="@string/update"
             android:layout_marginEnd="8dp"
             android:backgroundTint="@color/primary"
-            android:textColor="@android:color/white"
-            android:padding="8dp" />
+            android:textColor="@color/on_primary"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp" />
 
         <Button
             android:id="@+id/buttonDeleteQuestion"
@@ -47,7 +52,10 @@
             android:layout_height="wrap_content"
             android:text="@string/delete"
             android:backgroundTint="@color/secondary"
-            android:textColor="@android:color/white"
-            android:padding="8dp" />
+            android:textColor="@color/on_primary"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp" />
     </LinearLayout>
 </LinearLayout>

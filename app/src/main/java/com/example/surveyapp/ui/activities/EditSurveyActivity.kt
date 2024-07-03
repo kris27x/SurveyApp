@@ -7,7 +7,6 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.surveyapp.R
@@ -17,9 +16,6 @@ import com.example.surveyapp.ui.adapters.QuestionAdapter
 import com.example.surveyapp.viewmodels.SurveyViewModel
 import com.example.surveyapp.viewmodels.SurveyViewModelFactory
 
-/**
- * Activity for editing an existing survey.
- */
 class EditSurveyActivity : AppCompatActivity() {
 
     companion object {
