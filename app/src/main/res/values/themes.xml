@@ -1,16 +1,44 @@
 <resources>
 
     <!-- Base application theme -->
-    <style name="Theme.SurveyApp" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryDark">@color/purple_700</item>
-        <item name="colorAccent">@color/teal_200</item>
-        <item name="android:windowBackground">@color/white</item>
-        <item name="android:textColorPrimary">@color/black</item>
+    <style name="Theme.SurveyApp" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
 
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+        <!-- Customize your theme here -->
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:textColorPrimary">@color/on_background</item>
+        <item name="android:textColorSecondary">@color/grey_700</item>
+        <item name="android:colorControlActivated">@color/accent</item>
+        <item name="android:colorButtonNormal">@color/primary</item>
+        <item name="android:colorControlHighlight">@color/accent_dark</item>
+
+        <!-- Customize the action bar -->
+        <item name="android:actionBarStyle">@style/ActionBar</item>
+        <item name="android:actionBarTheme">@style/ActionBarTheme</item>
+        <item name="android:actionMenuTextColor">@color/on_primary</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!-- ActionBar Style -->
+    <style name="ActionBar" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="background">@color/primary</item>
+        <item name="titleTextStyle">@style/ActionBar.TitleText</item>
+    </style>
+
+    <style name="ActionBar.TitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/on_primary</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <!-- ActionBar Theme -->
+    <style name="ActionBarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:textColorPrimary">@color/on_primary</item>
     </style>
 
 </resources>

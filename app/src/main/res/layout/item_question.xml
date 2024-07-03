@@ -3,23 +3,27 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/surface">
 
     <TextView
         android:id="@+id/textViewQuestionText1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Question Text"
+        android:text="@string/question_text"
         android:textSize="16sp"
+        android:textColor="@color/on_surface"
         android:layout_marginBottom="8dp" />
 
     <EditText
         android:id="@+id/editTextQuestionText2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Edit Question Text"
+        android:hint="@string/edit_question_text"
         android:inputType="text"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/edit_text_background"
+        android:padding="12dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,17 +35,19 @@
             android:id="@+id/buttonUpdateQuestion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Update"
+            android:text="@string/update"
             android:layout_marginEnd="8dp"
-            android:backgroundTint="?attr/colorPrimary"
-            android:textColor="@android:color/white" />
+            android:backgroundTint="@color/primary"
+            android:textColor="@android:color/white"
+            android:padding="8dp" />
 
         <Button
             android:id="@+id/buttonDeleteQuestion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Delete"
-            android:backgroundTint="?attr/colorPrimary"
-            android:textColor="@android:color/white" />
+            android:text="@string/delete"
+            android:backgroundTint="@color/secondary"
+            android:textColor="@android:color/white"
+            android:padding="8dp" />
     </LinearLayout>
 </LinearLayout>

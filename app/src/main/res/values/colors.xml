@@ -1,5 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Primary Palette -->
+    <color name="primary_light">#BBDEFB</color> <!-- Light Blue 100 -->
+    <color name="primary">#2196F3</color> <!-- Blue 500 -->
+    <color name="primary_dark">#1976D2</color> <!-- Blue 700 -->
+
+    <!-- Secondary Palette -->
+    <color name="secondary_light">#FFCDD2</color> <!-- Light Red 100 -->
+    <color name="secondary">#F44336</color> <!-- Red 500 -->
+    <color name="secondary_dark">#D32F2F</color> <!-- Red 700 -->
+
+    <!-- Accent Colors -->
+    <color name="accent">#FFC107</color> <!-- Amber 500 -->
+    <color name="accent_dark">#FFA000</color> <!-- Amber 700 -->
+
+    <!-- Neutral Colors -->
+    <color name="background">#F5F5F5</color> <!-- Grey 100 -->
+    <color name="surface">#FFFFFF</color> <!-- White -->
+    <color name="error">#B00020</color> <!-- Red 700 -->
+    <color name="on_primary">#FFFFFF</color> <!-- White -->
+    <color name="on_secondary">#FFFFFF</color> <!-- White -->
+    <color name="on_background">#212121</color> <!-- Grey 900 -->
+    <color name="on_surface">#212121</color> <!-- Grey 900 -->
+    <color name="on_error">#FFFFFF</color> <!-- White -->
+
+    <!-- Additional Colors -->
+    <color name="grey_50">#FAFAFA</color>
+    <color name="grey_100">#F5F5F5</color>
+    <color name="grey_200">#EEEEEE</color>
+    <color name="grey_300">#E0E0E0</color>
+    <color name="grey_400">#BDBDBD</color>
+    <color name="grey_500">#9E9E9E</color>
+    <color name="grey_600">#757575</color>
+    <color name="grey_700">#616161</color>
+    <color name="grey_800">#424242</color>
+    <color name="grey_900">#212121</color>
+
+    <!-- Deprecated Colors (For reference and to avoid breaking existing code) -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -12,5 +49,4 @@
     <color name="colorPrimaryVariant">#3700B3</color>
     <color name="colorSecondary">#03DAC5</color>
 
-    <color name="primaryColor">#6200EE</color>
 </resources>

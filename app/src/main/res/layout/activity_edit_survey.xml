@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     tools:context=".ui.activities.EditSurveyActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -13,51 +14,76 @@
         android:theme="?attr/actionBarTheme"
         android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:elevation="4dp"
-        android:titleTextColor="@android:color/white"/>
+        android:titleTextColor="@color/on_primary" />
 
     <EditText
         android:id="@+id/editTextSurveyTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Survey Title"
         android:layout_below="@id/toolbar"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"/>
+        android:layout_marginEnd="16dp"
+        android:hint="@string/survey_title"
+        android:inputType="text"
+        android:padding="12dp"
+        android:background="@drawable/edit_text_background"
+        android:textColor="@color/on_background"
+        android:textColorHint="@color/grey_500"
+        android:textSize="16sp" />
 
     <EditText
         android:id="@+id/editTextSurveyDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Survey Description"
         android:layout_below="@id/editTextSurveyTitle"
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"/>
+        android:layout_marginEnd="16dp"
+        android:hint="@string/survey_description"
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:padding="12dp"
+        android:background="@drawable/edit_text_background"
+        android:textColor="@color/on_background"
+        android:textColorHint="@color/grey_500"
+        android:textSize="16sp" />
 
     <Button
         android:id="@+id/buttonUpdateSurvey"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Update Survey"
-        android:background="@color/colorPrimary"
-        android:textColor="@android:color/white"
         android:layout_below="@id/editTextSurveyDescription"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"/>
+        android:layout_marginEnd="16dp"
+        android:text="@string/update_survey"
+        android:backgroundTint="@color/primary"
+        android:textColor="@color/on_primary"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:elevation="4dp"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/buttonAddQuestion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Question"
-        android:background="@color/colorPrimary"
-        android:textColor="@android:color/white"
         android:layout_below="@id/buttonUpdateSurvey"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"/>
+        android:layout_marginEnd="16dp"
+        android:text="@string/add_question"
+        android:backgroundTint="@color/primary"
+        android:textColor="@color/on_primary"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:elevation="4dp"
+        android:textSize="18sp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewQuestions"
@@ -68,5 +94,9 @@
         android:layout_marginBottom="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:padding="8dp"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/item_question" />
 </RelativeLayout>

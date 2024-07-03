@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     tools:context=".ui.activities.CreateSurveyActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -10,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:theme="?attr/actionBarTheme" />
+        android:theme="?attr/actionBarTheme"
+        android:elevation="4dp" />
 
     <EditText
         android:id="@+id/editTextSurveyTitle"
@@ -18,8 +20,13 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/toolbar"
         android:layout_margin="16dp"
-        android:hint="Survey Title"
-        android:inputType="text" />
+        android:hint="@string/survey_title"
+        android:inputType="text"
+        android:padding="12dp"
+        android:background="@drawable/edit_text_background"
+        android:textColor="@color/on_background"
+        android:textColorHint="@color/grey_500"
+        android:textSize="16sp" />
 
     <EditText
         android:id="@+id/editTextSurveyDescription"
@@ -27,9 +34,14 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/editTextSurveyTitle"
         android:layout_margin="16dp"
-        android:hint="Survey Description"
+        android:hint="@string/survey_description"
         android:inputType="textMultiLine"
-        android:minLines="3" />
+        android:minLines="3"
+        android:padding="12dp"
+        android:background="@drawable/edit_text_background"
+        android:textColor="@color/on_background"
+        android:textColorHint="@color/grey_500"
+        android:textSize="16sp" />
 
     <Button
         android:id="@+id/buttonAddQuestion"
@@ -37,9 +49,15 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/editTextSurveyDescription"
         android:layout_margin="16dp"
-        android:text="Add Question"
-        android:backgroundTint="?attr/colorPrimary"
-        android:textColor="@android:color/white" />
+        android:text="@string/add_question"
+        android:backgroundTint="@color/primary"
+        android:textColor="@color/on_primary"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:elevation="4dp"
+        android:textSize="16sp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewQuestions"
@@ -47,7 +65,11 @@
         android:layout_height="0dp"
         android:layout_below="@id/buttonAddQuestion"
         android:layout_above="@id/buttonCreateSurvey"
-        android:layout_margin="16dp" />
+        android:layout_margin="16dp"
+        android:clipToPadding="false"
+        android:padding="8dp"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/item_question" />
 
     <Button
         android:id="@+id/buttonCreateSurvey"
@@ -55,7 +77,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
-        android:text="Create Survey"
-        android:backgroundTint="?attr/colorPrimary"
-        android:textColor="@android:color/white" />
+        android:text="@string/create_survey"
+        android:backgroundTint="@color/primary"
+        android:textColor="@color/on_primary"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:elevation="4dp"
+        android:textSize="18sp" />
 </RelativeLayout>

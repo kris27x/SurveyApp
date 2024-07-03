@@ -3,17 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     tools:context=".ui.activities.UserDashboardActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:theme="?attr/actionBarTheme"
         android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:elevation="4dp"
-        android:titleTextColor="@android:color/white"/>
+        android:title="@string/user_dashboard"
+        android:titleTextColor="@color/on_primary"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewSurveys"
@@ -21,6 +23,7 @@
         android:layout_height="match_parent"
         android:layout_below="@id/toolbar"
         android:padding="16dp"
-        android:clipToPadding="false"/>
+        android:clipToPadding="false"
+        tools:listitem="@layout/item_survey"/>
 
 </RelativeLayout>

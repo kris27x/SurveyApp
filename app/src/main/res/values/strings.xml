@@ -1,9 +1,83 @@
 <resources>
+    <!-- App Name -->
     <string name="app_name">SurveyApp</string>
+
+    <!-- Common Labels -->
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
+    <string name="submit">Submit</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="update">Update</string>
+    <string name="create">Create</string>
+    <string name="add">Add</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
 
+    <!-- Welcome Message -->
     <string name="welcome_message">Welcome to SurveyApp</string>
+
+    <!-- Login Screen -->
+    <string name="login_title">Login to Your Account</string>
+    <string name="login_prompt">Please enter your username and password</string>
+    <string name="login_success">Login Successful!</string>
+    <string name="login_failure">Invalid Credentials. Please try again.</string>
+    <string name="forgot_password">Forgot Password?</string>
+
+    <!-- Registration Screen -->
+    <string name="register_title">Create a New Account</string>
+    <string name="register_prompt">Please fill in the details to register</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="registration_success">Registration Successful!</string>
+    <string name="registration_failure">Registration Failed. Please try again.</string>
+    <string name="password_mismatch">Passwords do not match. Please try again.</string>
+    <string name="username_taken">Username is already taken. Please choose another.</string>
+
+    <!-- Survey Screens -->
+    <string name="create_survey">Create Survey</string>
+    <string name="edit_survey">Edit Survey</string>
+    <string name="survey_title">Survey Title</string>
+    <string name="survey_description">Survey Description</string>
+    <string name="add_question">Add Question</string>
+    <string name="new_question">New Question</string>
+    <string name="survey_created">Survey Created Successfully!</string>
+    <string name="survey_updated">Survey Updated Successfully!</string>
+    <string name="survey_deleted">Survey Deleted Successfully!</string>
+    <string name="error_creating_survey">Error Creating Survey. Please try again.</string>
+    <string name="error_updating_survey">Error Updating Survey. Please try again.</string>
+    <string name="error_deleting_survey">Error Deleting Survey. Please try again.</string>
+
+    <!-- Additional strings that were previously missing -->
+    <string name="add_survey">Add Survey</string>
+    <string name="update_survey">Update Survey</string>
+    <string name="exit">Exit</string>
+    <string name="register_as_admin">Register as Admin</string>
+    <string name="question_text">Question Text</string>
+    <string name="edit_question_text">Edit Question Text</string>
+    <string name="answers">Answers</string>
+
+
+    <!-- User Dashboard -->
+    <string name="user_dashboard">User Dashboard</string>
+    <string name="admin_dashboard">Admin Dashboard</string>
+    <string name="no_surveys">No surveys available</string>
+    <string name="view_results">View Results</string>
+    <string name="take_survey">Take Survey</string>
+    <string name="survey_completed">Survey Completed Successfully!</string>
+
+    <!-- Survey Taking -->
+    <string name="question_prompt">Please answer the following question:</string>
+    <string name="submit_answer">Submit Answer</string>
+    <string name="next_question">Next Question</string>
+    <string name="survey_thanks">Thank you for completing the survey!</string>
+
+    <!-- Error Messages -->
+    <string name="error_invalid_input">Invalid input. Please try again.</string>
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_unknown">An unknown error occurred. Please try again.</string>
 </resources>

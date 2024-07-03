@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
+    android:background="@color/background"
     tools:context=".ui.activities.TakeSurveyActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -12,7 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:theme="?attr/actionBarTheme" />
+        android:theme="?attr/actionBarTheme"
+        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:elevation="4dp"
+        android:titleTextColor="@color/on_primary" />
 
     <TextView
         android:id="@+id/textViewQuestion"
@@ -20,7 +24,9 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:textColor="@color/on_background"
+        tools:text="Question will be displayed here" />
 
     <RadioGroup
         android:id="@+id/radioGroupOptions"
@@ -33,10 +39,11 @@
         android:id="@+id/buttonSubmit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Submit"
+        android:text="@string/submit"
         android:layout_gravity="end"
         android:layout_marginTop="16dp"
-        android:backgroundTint="?attr/colorPrimary"
-        android:textColor="@android:color/white" />
+        android:backgroundTint="@color/primary"
+        android:textColor="@color/on_primary"
+        android:elevation="4dp" />
 
 </LinearLayout>
